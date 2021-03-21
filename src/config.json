@@ -1,0 +1,56 @@
+{
+  "name": "AWS EKS",
+  "type": "executer",
+  "imgUrl": "EKS.png",
+  "execProgram": "node",
+  "main": "app.js",
+  "version": "1.0.5",
+  "description": "Works with AWS EKS API",
+  "settings":[
+    {
+      "name": "accessKeyId",
+      "viewName": "AWS Access Key ID",
+      "type": "string"
+    },
+    {
+      "name": "secretAccesKey",
+      "viewName": "AWS Secret Access Key",
+      "type": "vault"
+    }
+  ],
+  "methods": [
+    {
+      "name": "getToken",
+      "viewName": "Get Token",
+      "params": [
+        {
+          "name": "accessKeyId",
+          "viewName": "AWS Access Key ID",
+          "type": "string"
+        },
+        {
+          "name": "secretAccesKey",
+          "viewName": "AWS Secret Access Key",
+          "type": "vault"
+        },
+        {
+          "name": "region",
+          "viewName": "AWS Region",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "getRegions"
+        },
+        {
+          "name": "clusterName",
+          "viewName": "EKS Cluster Name",
+          "type": "string"
+        },
+        {
+          "name": "expires",
+          "viewName": "Token Expires(in seconds)",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
