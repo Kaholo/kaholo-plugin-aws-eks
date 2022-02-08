@@ -4,16 +4,16 @@
   "imgUrl": "EKS.png",
   "execProgram": "node",
   "main": "app.js",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Works with AWS EKS API",
   "settings": [
     {
       "name": "accessKeyId",
       "viewName": "AWS Access Key ID",
-      "type": "string"
+      "type": "vault"
     },
     {
-      "name": "secretAccesKey",
+      "name": "secretAccessKey",
       "viewName": "AWS Secret Access Key",
       "type": "vault"
     }
@@ -26,10 +26,10 @@
         {
           "name": "accessKeyId",
           "viewName": "AWS Access Key ID",
-          "type": "string"
+          "type": "vault"
         },
         {
-          "name": "secretAccesKey",
+          "name": "secretAccessKey",
           "viewName": "AWS Secret Access Key",
           "type": "vault"
         },
@@ -38,7 +38,7 @@
           "viewName": "AWS Region",
           "type": "autocomplete",
           "autocompleteType": "function",
-          "functionName": "getRegions"
+          "functionName": "listRegions"
         },
         {
           "name": "clusterName",
