@@ -1,4 +1,4 @@
-const { getRegions } = require("./autocomplete")
+const { listRegions } = require("./autocomplete")
 const dayjs = require('dayjs');
 
 async function getToken(action, settings){
@@ -10,15 +10,15 @@ async function getToken(action, settings){
   if (!Number.isInteger(parseFloat(expires))){
     throw "expires must be an integer";
   }
-  
+
   EKSToken.config = {
     accessKeyId:  action.params.accessKeyId || settings.accessKeyId,
-    secretAccessKey: action.params.secretAccesKey || settings.secretAccesKey,
+    secretAccessKey: action.params.secretAccessKey || settings.secretAccessKey,
     region: action.params.region
   }
 
   const reqTime = dayjs();
-  const token = await EKSToken.renew(action.params.clusterName, expires, 
+  const token = await EKSToken.renew(action.params.clusterName, expires,
     reqTime.utc().format('YYYYMMDDTHHmmss[Z]'));
   const expirationTime = reqTime.add(parseInt(expires), "s").utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
   return {
@@ -30,6 +30,6 @@ async function getToken(action, settings){
 module.exports = {
   getToken,
   // autocomplete
-  getRegions
+  listRegions
 };
 
