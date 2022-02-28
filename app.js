@@ -2,8 +2,8 @@ const dayjs = require("dayjs");
 const EKSToken = require("aws-eks-token");
 const AWS = require("aws-sdk");
 const { promisify } = require("util");
-const { listRegions } = require("./autocomplete");
-const { CLUSTER_NAME_NOT_PROVIDED_MESSAGE, EXPIRES_INVALID_MESSAGE } = require("./consts");
+const autocomplete = require("./autocomplete");
+const { CLUSTER_REQUIRED_MESSAGE, EXPIRES_INVALID_MESSAGE } = require("./consts");
 const parsers = require("./parsers");
 
 async function getToken({ params }, settings) {
@@ -14,16 +14,14 @@ async function getToken({ params }, settings) {
   const accessKeyId = parsers.string(params.accessKeyId || settings.accessKeyId);
 
   if (!clusterName) {
-    throw new Error(CLUSTER_NAME_NOT_PROVIDED_MESSAGE);
+    throw new Error(CLUSTER_REQUIRED_MESSAGE);
   }
   if (!Number.isInteger(parseFloat(expires))) {
     throw new Error(EXPIRES_INVALID_MESSAGE);
   }
 
   const credentials = { secretAccessKey, accessKeyId };
-
   const EKS = new AWS.EKS({ credentials, region });
-
   EKSToken.config = {
     ...credentials,
     region,
@@ -50,5 +48,5 @@ async function getToken({ params }, settings) {
 
 module.exports = {
   getToken,
-  listRegions,
+  ...autocomplete,
 };

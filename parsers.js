@@ -9,12 +9,13 @@ module.exports = {
   },
   number: (value) => {
     if (!value) { return undefined; }
-    const parsed = parseInt(value, 10);
+    const parsed = parseFloat(value);
     if (Number.isNaN(parsed)) {
       throw new Error(`Value ${value} is not a valid number`);
     }
     return parsed;
   },
+  integer: (value) => parseInt(this.number(value), 10),
   autocomplete: (value, getVal) => {
     if (!value) { return undefined; }
     if (typeof (value) === "object") { return (getVal ? value.value : value.id) || value; }
