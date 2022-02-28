@@ -1,6 +1,5 @@
+const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR } = require("./consts");
 const { getEc2, getLightsail } = require("./helpers");
-
-const MISSING_OR_INCORRECT_CREDENTIALS_ERROR = "Missing or incorrect credentials - please select valid access and secret keys first";
 
 function paramsMapper(pluginSettings, actionParams) {
   const settings = {};
@@ -45,7 +44,7 @@ async function listRegions(query, pluginSettings, actionParams) {
     }),
   ).catch((err) => {
     console.error(err);
-    throw MISSING_OR_INCORRECT_CREDENTIALS_ERROR;
+    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_ERROR);
   });
 }
 
