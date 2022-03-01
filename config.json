@@ -5,8 +5,8 @@
   "imgUrl": "EKS.png",
   "execProgram": "node",
   "main": "app.js",
-  "version": "1.1.0",
-  "description": "Works with AWS EKS API",
+  "version": "2.0.0",
+  "description": "Integration with AWS EKS API",
   "settings": [
     {
       "name": "accessKeyId",
@@ -27,8 +27,26 @@
         {
           "name": "clusterName",
           "viewName": "EKS Cluster Name",
+          "description": "The name of the cluster to generate token for.",
+          "placeholder": "prod",
           "type": "string",
           "required": true
+        },
+        {
+          "name": "region",
+          "viewName": "AWS Region",
+          "description": "The region to send service requests to. A region is a physical location around the world where the AWS data center is situated.",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listRegions",
+          "required": true
+        },
+        {
+          "name": "expires",
+          "viewName": "Expires In",
+          "description": "A time (in seconds) after the token should be considered expired.",
+          "placeholder": "60",
+          "type": "string"
         },
         {
           "name": "accessKeyId",
@@ -39,18 +57,180 @@
           "name": "secretAccessKey",
           "viewName": "AWS Secret Access Key",
           "type": "vault"
+        }
+      ]
+    },
+    {
+      "name": "createCluster",
+      "viewName": "Create New Cluster",
+      "description": "Creates an Amazon EKS control plane.",
+      "params": [
+        {
+          "name": "clusterName",
+          "viewName": "Cluster Name",
+          "description": "The unique name to give to your cluster.",
+          "placeholder": "prod",
+          "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
+          "type": "string",
+          "required": true
         },
         {
           "name": "region",
           "viewName": "AWS Region",
+          "description": "The region to send service requests to. A region is a physical location around the world where the AWS data center is situated.",
+          "learnUrl": "https://aws.amazon.com/about-aws/global-infrastructure/regions_az/",
           "type": "autocomplete",
           "autocompleteType": "function",
-          "functionName": "listRegions"
+          "functionName": "listRegions",
+          "required": true
         },
         {
-          "name": "expires",
-          "viewName": "Token Expires(in seconds)",
+          "name": "roleArn",
+          "viewName": "ARN Role",
+          "description": "The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listRoles",
+          "required": true
+        },
+        {
+          "name": "vpcSubnets",
+          "viewName": "VPC Subnet IDs",
+          "description": "Subnets for your Amazon EKS nodes, one subnet per line. Amazon EKS creates cross-account elastic network interfaces in these subnets to allow communication between your nodes and the Kubernetes control plane.",
+          "placeholder": "subnet-6782e71e",
+          "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "vpcSecurityGroups",
+          "viewName": "VPC Security Group IDs",
+          "description": "One or more security groups, one group per line, for the cross-account elastic network interfaces that Amazon EKS creates to use that allow communication between your nodes and the Kubernetes control plane.",
+          "placeholder": "sg-6979fe18",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "endpointPublicAccess",
+          "viewName": "Public Access",
+          "description": "Set this value to false to disable public access to your cluster's Kubernetes API server endpoint. If you disable public access, your cluster's Kubernetes API server can only receive requests from within the cluster VPC. The default value for this parameter is true, which enables public access for your Kubernetes API server.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html",
+          "type": "boolean"
+        },
+        {
+          "name": "endpointPrivateAccess",
+          "viewName": "Private Access",
+          "description": "Set this value to true to enable private access for your cluster's Kubernetes API server endpoint. If you enable private access, Kubernetes API requests from within your cluster's VPC use the private VPC endpoint. The default value for this parameter is false, which disables private access for your Kubernetes API server. If you disable private access and you have nodes or Fargate pods in the cluster, then ensure that Public Access CIDRs param includes the necessary CIDR blocks for communication with the nodes or Fargate pods.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html",
+          "type": "boolean"
+        },
+        {
+          "name": "publicAccessCidrs",
+          "viewName": "Public Access CIDRs",
+          "description": "The CIDR blocks, one block per line, that are allowed access to your cluster's public Kubernetes API server endpoint. Communication to the endpoint from addresses outside of the CIDR blocks that you specify is denied. The default value is 0.0.0.0/0. If you've disabled private endpoint access and you have nodes or Fargate pods in the cluster, then ensure that you specify the necessary CIDR blocks.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html",
+          "type": "text"
+        },
+        {
+          "name": "kubernetesServiceIpv4Cidr",
+          "viewName": "Kubernetes Service IPv4 CIDR",
+          "description": "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks. We recommend that you specify a block that does not overlap with resources in other networks that are peered or connected to your VPC.",
+          "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
           "type": "string"
+        },
+        {
+          "name": "kubernetesIpFamily",
+          "viewName": "Kubernetes IP Family",
+          "description": "IP version to be used to assign Kubernetes Pod and Service IP addresses. If you don't specify a value, ipv4 is used by default. You can only specify an IP family when you create a cluster and can't change this value once the cluster is created. If you specify ipv6, the VPC and subnets that you specify for cluster creation must have both IPv4 and IPv6 CIDR blocks assigned to them.",
+          "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
+          "type": "options",
+          "options": [
+            {
+              "id": "ipv4",
+              "name": "IPv4"
+            },
+            {
+              "id": "ipv6",
+              "name": "IPv6"
+            }
+          ]
+        },
+        {
+          "name": "apiLogs",
+          "viewName": "API Logs",
+          "description": "Enable or disable exporting the Kubernetes control plane API logs for your cluster to CloudWatch Logs.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
+          "type": "boolean"
+        },
+        {
+          "name": "auditLogs",
+          "viewName": "Audit Logs",
+          "description": "Enable or disable exporting the Kubernetes control plane Audit logs for your cluster to CloudWatch Logs.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
+          "type": "boolean"
+        },
+        {
+          "name": "authenticatorLogs",
+          "viewName": "Authenticator Logs",
+          "description": "Enable or disable exporting the Kubernetes control plane Authenticator logs for your cluster to CloudWatch Logs.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
+          "type": "boolean"
+        },
+        {
+          "name": "controllerManagerLogs",
+          "viewName": "Controller Manager Logs",
+          "description": "Enable or disable exporting the Kubernetes control plane Controller Manager logs for your cluster to CloudWatch Logs.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
+          "type": "boolean"
+        },
+        {
+          "name": "schedulerLogs",
+          "viewName": "Scheduler Logs",
+          "description": "Enable or disable exporting the Kubernetes control plane Scheduler logs for your cluster to CloudWatch Logs.",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
+          "type": "boolean"
+        },
+        {
+          "name": "kubernetesVersion",
+          "viewName": "Kubernetes Version",
+          "description": "The desired Kubernetes version for your cluster. If you don't specify a value here, the latest version available in Amazon EKS is used.",
+          "placeholder": "1.10",
+          "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
+          "type": "string"
+        },
+        {
+          "name": "tags",
+          "viewName": "Tags",
+          "description": "The metadata to apply to the cluster to assist with categorization and organization. Each tag consists of a key and an optional value. You define them using \"KEY=VALUE\" syntax.",
+          "placeholder": "ClusterMetadata1=SomeValue",
+          "type": "text"
+        },
+        {
+          "name": "encryptionResources",
+          "viewName": "Cluster Encryption Resources",
+          "description": "The resources to be encrypted. The only supported value is \"secrets\".",
+          "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
+          "placeholder": "secrets",
+          "type": "text"
+        },
+        {
+          "name": "encryptionResources",
+          "viewName": "Cluster Encryption Provider Key",
+          "description": "Amazon Resource Name (ARN) or alias of the KMS key. The KMS key must be symmetric, created in the same region as the cluster, and if the KMS key was created in a different account, the user must have access to the KMS key.",
+          "learnUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
+          "type": "string"
+        },
+        {
+          "name": "accessKeyId",
+          "viewName": "AWS Access Key ID",
+          "type": "vault"
+        },
+        {
+          "name": "secretAccessKey",
+          "viewName": "AWS Secret Access Key",
+          "type": "vault"
         }
       ]
     }

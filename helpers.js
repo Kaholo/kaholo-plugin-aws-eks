@@ -1,23 +1,22 @@
 const aws = require("aws-sdk");
 const parsers = require("./parsers");
 
-function getEc2(params, settings) {
-  return new aws.EC2({
-    region: parsers.autocomplete(params.region) || settings.region,
+const getServiceCreator = (serviceName) => (params, settings = {}) => new aws[serviceName]({
+  credentials: {
     accessKeyId: params.accessKeyId || settings.accessKeyId,
     secretAccessKey: params.secretAccessKey || settings.secretAccessKey,
-  });
-}
+  },
+  region: parsers.autocomplete(params.region) || settings.region,
+});
 
-function getLightsail(params, settings) {
-  return new aws.Lightsail({
-    region: parsers.autocomplete(params.region) || settings.region,
-    accessKeyId: params.accessKeyId || settings.accessKeyId,
-    secretAccessKey: params.secretAccessKey || settings.secretAccessKey,
-  });
+function isObjectEmpty(ob) {
+  return Object.values(ob).filter(Boolean).length === 0;
 }
 
 module.exports = {
-  getEc2,
-  getLightsail,
+  getEc2: getServiceCreator("EC2"),
+  getLightsail: getServiceCreator("Lightsail"),
+  getEKS: getServiceCreator("EKS"),
+  getIAM: getServiceCreator("IAM"),
+  isObjectEmpty,
 };
