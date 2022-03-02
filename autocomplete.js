@@ -1,6 +1,6 @@
-const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR, EKS_SERVICE_URL, CORRUPTED_ROLE_POLICY_TEXT } = require("./consts");
+const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR } = require("./consts");
 const {
-  getEc2, getLightsail, getIAM,
+  getEc2, getLightsail, getIAM, roleFilter,
 } = require("./helpers");
 
 function paramsMapper(pluginSettings, actionParams) {
@@ -52,25 +52,15 @@ async function listRegions(query, pluginSettings, actionParams) {
 
 async function listRoles(query, pluginSettings, actionParams) {
   const { settings, params } = paramsMapper(pluginSettings, actionParams);
-  const e = getIAM(params, settings);
-  const roles = await e.listRoles().promise().catch((err) => {
+  const iam = getIAM(params, settings);
+  const roles = await iam.listRoles().promise().catch((err) => {
     console.error(err);
     throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_ERROR);
   });
 
   return roles.Roles
-    .filter(({ RoleName, AssumeRolePolicyDocument }) => {
-      let policy;
-      try {
-        policy = JSON.parse(decodeURIComponent(AssumeRolePolicyDocument));
-      } catch {
-        throw new Error(CORRUPTED_ROLE_POLICY_TEXT(RoleName));
-      }
-      const roleIntendedForEks = policy.Statement.some(
-        (item) => item.Principal.Service.includes(EKS_SERVICE_URL),
-      );
-      return RoleName.includes(query) && roleIntendedForEks;
-    })
+    .filter(roleFilter) // filtering roles intended for EKS
+    .filter(({ RoleName }) => RoleName.includes(query)) // filtering roles by query
     .map(({ Arn, RoleName }) => ({ id: Arn, value: RoleName }));
 }
 
