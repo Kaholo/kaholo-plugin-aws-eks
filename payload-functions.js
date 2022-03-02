@@ -86,7 +86,7 @@ function createPayloadForCreateCluster(params) {
 }
 
 function validateCreateClusterPayload(payload) {
-  if (!payload.clusterName) {
+  if (!payload.name) {
     throw new Error(CLUSTER_REQUIRED_MESSAGE);
   }
   if (!payload.roleArn) {
