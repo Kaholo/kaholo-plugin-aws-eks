@@ -1,23 +1,11 @@
-const {
-  EXPIRES_INVALID_MESSAGE, CLUSTER_REQUIRED_MESSAGE,
-  ARN_REQUIRED_MESSAGE, VPC_SUBNETS_REQUIRED_MESSAGE, VPC_SECURITY_GROUPS_REQUIRED_MESSAGE,
-} = require("./consts");
+const { DEFAULT_TOKEN_EXPIRE_TIME } = require("./consts");
 const { isObjectEmpty } = require("./helpers");
 const parsers = require("./parsers");
 
 function createPayloadForGetToken(params) {
   const clusterName = parsers.string(params.clusterName);
-  const expires = parsers.integer(params.expires) || 60;
+  const expires = parsers.integer(params.expires) || DEFAULT_TOKEN_EXPIRE_TIME;
   return { clusterName, expires };
-}
-
-function validateGetTokenPayload(payload) {
-  if (!payload.clusterName) {
-    throw new Error(CLUSTER_REQUIRED_MESSAGE);
-  }
-  if (!Number.isInteger(payload.expires)) {
-    throw new Error(EXPIRES_INVALID_MESSAGE);
-  }
 }
 
 function createPayloadForCreateCluster(params) {
@@ -85,24 +73,7 @@ function createPayloadForCreateCluster(params) {
   return clusterParams;
 }
 
-function validateCreateClusterPayload(payload) {
-  if (!payload.name) {
-    throw new Error(CLUSTER_REQUIRED_MESSAGE);
-  }
-  if (!payload.roleArn) {
-    throw new Error(ARN_REQUIRED_MESSAGE);
-  }
-  if (!payload.resourcesVpcConfig.subnetIds.length) {
-    throw new Error(VPC_SUBNETS_REQUIRED_MESSAGE);
-  }
-  if (!payload.resourcesVpcConfig.securityGroupIds.length) {
-    throw new Error(VPC_SECURITY_GROUPS_REQUIRED_MESSAGE);
-  }
-}
-
 module.exports = {
   createPayloadForCreateCluster,
   createPayloadForGetToken,
-  validateGetTokenPayload,
-  validateCreateClusterPayload,
 };

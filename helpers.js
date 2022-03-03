@@ -1,8 +1,10 @@
 const aws = require("aws-sdk");
-const { CORRUPTED_ROLE_POLICY_TEXT, EKS_SERVICE_URL } = require("./consts");
+const { EKS_SERVICE_URL } = require("./consts");
 const parsers = require("./parsers");
 
-function mapAWSConfig(params, settings) {
+const createCorruptedRolePolicyMessage = (roleName) => `Failed to parse role policy for role "${roleName}".`;
+
+function mapAwsConfig(params, settings) {
   const region = parsers.autocomplete(params.region);
   const accessKeyId = parsers.string(params.accessKeyId) || settings.accessKeyId;
   const secretAccessKey = parsers.string(params.secretAccessKey) || settings.secretAccessKey;
@@ -11,7 +13,7 @@ function mapAWSConfig(params, settings) {
 
 function getServiceCreator(serviceName) {
   return (params, settings = {}) => {
-    const config = mapAWSConfig(params, settings);
+    const config = mapAwsConfig(params, settings);
     return new aws[serviceName]({
       credentials: {
         accessKeyId: config.accessKeyId,
@@ -31,7 +33,7 @@ function roleFilter({ RoleName, AssumeRolePolicyDocument }) {
   try {
     policy = JSON.parse(decodeURIComponent(AssumeRolePolicyDocument));
   } catch {
-    throw new Error(CORRUPTED_ROLE_POLICY_TEXT(RoleName));
+    throw new Error(createCorruptedRolePolicyMessage(RoleName));
   }
   const roleIntendedForEks = policy.Statement.some(
     (item) => item.Principal.Service.includes(EKS_SERVICE_URL),
@@ -45,6 +47,7 @@ module.exports = {
   getEKS: getServiceCreator("EKS"),
   getIAM: getServiceCreator("IAM"),
   isObjectEmpty,
-  mapAWSConfig,
+  mapAwsConfig,
   roleFilter,
+  createCorruptedRolePolicyMessage,
 };

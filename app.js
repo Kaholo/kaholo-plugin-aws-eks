@@ -1,18 +1,16 @@
 const dayjs = require("dayjs");
 const EKSToken = require("aws-eks-token");
 const autocomplete = require("./autocomplete");
-const { getEKS, mapAWSConfig } = require("./helpers");
+const { getEKS, mapAwsConfig } = require("./helpers");
 const {
-  createPayloadForGetToken, validateGetTokenPayload,
-  createPayloadForCreateCluster, validateCreateClusterPayload,
+  createPayloadForGetToken,
+  createPayloadForCreateCluster,
 } = require("./payload-functions");
 
 async function getToken({ params }, settings) {
-  const payload = createPayloadForGetToken(params);
-  validateGetTokenPayload(payload);
-  const { expires, clusterName } = payload;
+  const { expires, clusterName } = createPayloadForGetToken(params);
 
-  const config = mapAWSConfig(params, settings);
+  const config = mapAwsConfig(params, settings);
   const eks = getEKS(config);
   EKSToken.config = config;
   const reqTime = dayjs();
@@ -34,9 +32,8 @@ async function getToken({ params }, settings) {
 }
 
 async function createCluster({ params }, settings) {
-  const { accessKeyId, secretAccessKey, region } = mapAWSConfig(params, settings);
+  const { accessKeyId, secretAccessKey, region } = mapAwsConfig(params, settings);
   const clusterPayload = createPayloadForCreateCluster(params);
-  validateCreateClusterPayload(clusterPayload);
 
   const eks = getEKS({ secretAccessKey, accessKeyId, region });
   const { cluster } = await eks.createCluster(clusterPayload).promise();
