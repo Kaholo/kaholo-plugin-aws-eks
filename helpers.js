@@ -49,5 +49,4 @@ module.exports = {
   isObjectEmpty,
   mapAwsConfig,
   roleFilter,
-  createCorruptedRolePolicyMessage,
 };
