@@ -46,6 +46,7 @@
           "viewName": "Expires In",
           "description": "A time (in seconds) after the token should be considered expired.",
           "placeholder": "60",
+          "default": "60",
           "type": "string"
         },
         {

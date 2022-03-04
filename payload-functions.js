@@ -1,10 +1,9 @@
-const { DEFAULT_TOKEN_EXPIRE_TIME } = require("./consts");
 const { isObjectEmpty } = require("./helpers");
 const parsers = require("./parsers");
 
 function createPayloadForGetToken(params) {
   const clusterName = parsers.string(params.clusterName);
-  const expires = parsers.integer(params.expires) || DEFAULT_TOKEN_EXPIRE_TIME;
+  const expires = parsers.integer(params.expires);
   return { clusterName, expires };
 }
 

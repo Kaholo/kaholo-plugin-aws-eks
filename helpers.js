@@ -2,8 +2,6 @@ const aws = require("aws-sdk");
 const { EKS_SERVICE_URL } = require("./consts");
 const parsers = require("./parsers");
 
-const createCorruptedRolePolicyMessage = (roleName) => `Failed to parse role policy for role "${roleName}".`;
-
 function mapAwsConfig(params, settings) {
   const region = parsers.autocomplete(params.region);
   const accessKeyId = parsers.string(params.accessKeyId) || settings.accessKeyId;
@@ -33,7 +31,7 @@ function roleFilter({ RoleName, AssumeRolePolicyDocument }) {
   try {
     policy = JSON.parse(decodeURIComponent(AssumeRolePolicyDocument));
   } catch {
-    throw new Error(createCorruptedRolePolicyMessage(RoleName));
+    throw new Error(`Failed to parse role policy for role "${RoleName}".`);
   }
   const roleIntendedForEks = policy.Statement.some(
     (item) => item.Principal.Service.includes(EKS_SERVICE_URL),

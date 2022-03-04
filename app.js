@@ -32,9 +32,9 @@ async function getToken({ params }, settings) {
 }
 
 async function createCluster({ params }, settings) {
-  const { accessKeyId, secretAccessKey, region } = mapAwsConfig(params, settings);
   const clusterPayload = createPayloadForCreateCluster(params);
 
+  const { accessKeyId, secretAccessKey, region } = mapAwsConfig(params, settings);
   const eks = getEKS({ secretAccessKey, accessKeyId, region });
   const { cluster } = await eks.createCluster(clusterPayload).promise();
   return cluster;
