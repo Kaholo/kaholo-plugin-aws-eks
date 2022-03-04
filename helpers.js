@@ -6,20 +6,17 @@ function mapAwsConfig(params, settings) {
   const region = parsers.autocomplete(params.region);
   const accessKeyId = parsers.string(params.accessKeyId) || settings.accessKeyId;
   const secretAccessKey = parsers.string(params.secretAccessKey) || settings.secretAccessKey;
-  return { region, accessKeyId, secretAccessKey };
+  return {
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  };
 }
 
 function getServiceCreator(serviceName) {
-  return (params, settings = {}) => {
-    const config = mapAwsConfig(params, settings);
-    return new aws[serviceName]({
-      credentials: {
-        accessKeyId: config.accessKeyId,
-        secretAccessKey: config.secretAccessKey,
-      },
-      region: config.region,
-    });
-  };
+  return (config) => new aws[serviceName](config);
 }
 
 function isObjectEmpty(ob) {

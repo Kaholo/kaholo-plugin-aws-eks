@@ -10,9 +10,9 @@ const {
 async function getToken({ params }, settings) {
   const { expires, clusterName } = createPayloadForGetToken(params);
 
-  const config = mapAwsConfig(params, settings);
-  const eks = getEKS(config);
-  EKSToken.config = config;
+  const awsConfig = mapAwsConfig(params, settings);
+  const eks = getEKS(awsConfig);
+  EKSToken.config = awsConfig;
   const reqTime = dayjs();
   const dateFormat = "YYYY-MM-DDTHH:mm:ss[Z]";
 
@@ -34,8 +34,8 @@ async function getToken({ params }, settings) {
 async function createCluster({ params }, settings) {
   const clusterPayload = createPayloadForCreateCluster(params);
 
-  const { accessKeyId, secretAccessKey, region } = mapAwsConfig(params, settings);
-  const eks = getEKS({ secretAccessKey, accessKeyId, region });
+  const awsConfig = mapAwsConfig(params, settings);
+  const eks = getEKS(awsConfig);
   const { cluster } = await eks.createCluster(clusterPayload).promise();
   return cluster;
 }
