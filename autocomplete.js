@@ -1,4 +1,4 @@
-const { MISSING_OR_INCORRECT_CREDENTIALS_MESSAGE } = require("./consts");
+const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE } = require("./consts");
 const {
   getEc2, getLightsail, getIAM, roleFilter, mapAwsConfig,
 } = require("./helpers");
@@ -47,7 +47,7 @@ async function listRegions(query, pluginSettings, actionParams) {
     }),
   ).catch((err) => {
     console.error(err);
-    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_MESSAGE);
+    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE);
   });
 }
 
@@ -57,7 +57,7 @@ async function listRoles(query, pluginSettings, actionParams) {
   const iam = getIAM(awsConfig);
   const roles = await iam.listRoles().promise().catch((err) => {
     console.error(err);
-    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_MESSAGE);
+    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE);
   });
 
   return roles.Roles
