@@ -15,7 +15,9 @@ module.exports = {
     }
     return parsed;
   },
-  integer: (value) => parseInt(this.number(value), 10),
+  integer(value) {
+    return parseInt(this.number(value), 10);
+  },
   autocomplete: (value, getVal) => {
     if (!value) { return undefined; }
     if (typeof (value) === "object") { return (getVal ? value.value : value.id) || value; }
