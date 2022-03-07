@@ -1,5 +1,7 @@
-const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR } = require("./consts");
-const { getEc2, getLightsail } = require("./helpers");
+const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE } = require("./consts");
+const {
+  getEc2, getLightsail, getIAM, roleFilter, mapAwsConfig,
+} = require("./helpers");
 
 function paramsMapper(pluginSettings, actionParams) {
   const settings = {};
@@ -25,8 +27,9 @@ async function listRegions(query, pluginSettings, actionParams) {
   const { settings } = mapped;
   let { params } = mapped;
   params = { ...params, region: params.region || "eu-west-2" };
-  const ec2 = getEc2(params, settings);
-  const lightsail = getLightsail(params, settings);
+  const awsConfig = mapAwsConfig(params, settings);
+  const ec2 = getEc2(awsConfig);
+  const lightsail = getLightsail(awsConfig);
 
   const ec2RegionsPromise = ec2.describeRegions().promise();
   const lightsailRegionsPromise = lightsail.getRegions().promise();
@@ -44,10 +47,26 @@ async function listRegions(query, pluginSettings, actionParams) {
     }),
   ).catch((err) => {
     console.error(err);
-    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_ERROR);
+    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE);
   });
+}
+
+async function listRoles(query, pluginSettings, actionParams) {
+  const { settings, params } = paramsMapper(pluginSettings, actionParams);
+  const awsConfig = mapAwsConfig(params, settings);
+  const iam = getIAM(awsConfig);
+  const roles = await iam.listRoles().promise().catch((err) => {
+    console.error(err);
+    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE);
+  });
+
+  return roles.Roles
+    .filter(roleFilter) // filtering roles intended for EKS
+    .filter(({ RoleName }) => RoleName.includes(query)) // filtering roles by query
+    .map(({ Arn, RoleName }) => ({ id: Arn, value: RoleName }));
 }
 
 module.exports = {
   listRegions,
+  listRoles,
 };
