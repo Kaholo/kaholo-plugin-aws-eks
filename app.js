@@ -1,30 +1,18 @@
 const dayjs = require("dayjs");
 const EKSToken = require("aws-eks-token");
-const AWS = require("aws-sdk");
 const autocomplete = require("./autocomplete");
-const { CLUSTER_REQUIRED_MESSAGE, EXPIRES_INVALID_MESSAGE } = require("./consts");
-const parsers = require("./parsers");
+const { getEKS, mapAwsConfig } = require("./helpers");
+const {
+  createPayloadForGetToken,
+  createPayloadForCreateCluster,
+} = require("./payload-functions");
 
 async function getToken({ params }, settings) {
-  const clusterName = parsers.string(params.clusterName);
-  const region = parsers.autocomplete(params.region);
-  const expires = parsers.integer(params.expires) || 60;
-  const secretAccessKey = parsers.string(params.secretAccessKey || settings.secretAccessKey);
-  const accessKeyId = parsers.string(params.accessKeyId || settings.accessKeyId);
+  const { expires, clusterName } = createPayloadForGetToken(params);
 
-  if (!clusterName) {
-    throw new Error(CLUSTER_REQUIRED_MESSAGE);
-  }
-  if (!Number.isInteger(expires)) {
-    throw new Error(EXPIRES_INVALID_MESSAGE);
-  }
-
-  const credentials = { secretAccessKey, accessKeyId };
-  const EKS = new AWS.EKS({ credentials, region });
-  EKSToken.config = {
-    ...credentials,
-    region,
-  };
+  const awsConfig = mapAwsConfig(params, settings);
+  const eks = getEKS(awsConfig);
+  EKSToken.config = awsConfig;
   const reqTime = dayjs();
   const dateFormat = "YYYY-MM-DDTHH:mm:ss[Z]";
 
@@ -33,17 +21,27 @@ async function getToken({ params }, settings) {
     expires,
     reqTime.utc().format(dateFormat),
   );
-  const { cluster } = await EKS.describeCluster({ name: clusterName }).promise();
-  const expirationTime = reqTime.add(expires, "s").utc().format(dateFormat);
+  const { cluster } = await eks.describeCluster({ name: clusterName }).promise();
+  const expirationTimestamp = reqTime.add(expires, "s").utc().format(dateFormat);
   return {
-    expirationTimestamp: expirationTime,
+    expirationTimestamp,
     token,
     clusterHost: cluster.endpoint,
     clusterCA: cluster.certificateAuthority.data,
   };
 }
 
+async function createCluster({ params }, settings) {
+  const clusterPayload = createPayloadForCreateCluster(params);
+
+  const awsConfig = mapAwsConfig(params, settings);
+  const eks = getEKS(awsConfig);
+  const { cluster } = await eks.createCluster(clusterPayload).promise();
+  return cluster;
+}
+
 module.exports = {
   getToken,
+  createCluster,
   ...autocomplete,
 };
