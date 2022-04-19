@@ -5,7 +5,7 @@
   "imgUrl": "EKS.png",
   "execProgram": "node",
   "main": "app.js",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Integration with AWS EKS API",
   "settings": [
     {
