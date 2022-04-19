@@ -25,6 +25,16 @@
       "viewName": "Get Token",
       "params": [
         {
+          "name": "accessKeyId",
+          "viewName": "AWS Access Key ID",
+          "type": "vault"
+        },
+        {
+          "name": "secretAccessKey",
+          "viewName": "AWS Secret Access Key",
+          "type": "vault"
+        },
+        {
           "name": "clusterName",
           "viewName": "EKS Cluster Name",
           "description": "The name of the cluster to generate token for.",
@@ -48,7 +58,14 @@
           "placeholder": "60",
           "default": "60",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "createCluster",
+      "viewName": "Create New Cluster",
+      "description": "Creates an Amazon EKS control plane.",
+      "params": [
         {
           "name": "accessKeyId",
           "viewName": "AWS Access Key ID",
@@ -58,14 +75,7 @@
           "name": "secretAccessKey",
           "viewName": "AWS Secret Access Key",
           "type": "vault"
-        }
-      ]
-    },
-    {
-      "name": "createCluster",
-      "viewName": "Create New Cluster",
-      "description": "Creates an Amazon EKS control plane.",
-      "params": [
+        },
         {
           "name": "clusterName",
           "viewName": "Cluster Name",
@@ -102,6 +112,7 @@
           "placeholder": "subnet-6782e71e",
           "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
           "type": "text",
+          "parserType": "array",
           "required": true
         },
         {
@@ -111,6 +122,7 @@
           "placeholder": "sg-6979fe18",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html",
           "type": "text",
+          "parserType": "array",
           "required": true
         },
         {
@@ -132,7 +144,8 @@
           "viewName": "Public Access CIDRs",
           "description": "The CIDR blocks, one block per line, that are allowed access to your cluster's public Kubernetes API server endpoint. Communication to the endpoint from addresses outside of the CIDR blocks that you specify is denied. The default value is 0.0.0.0/0. If you've disabled private endpoint access and you have nodes or Fargate pods in the cluster, then ensure that you specify the necessary CIDR blocks.",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html",
-          "type": "text"
+          "type": "text",
+          "parserType": "array"
         },
         {
           "name": "kubernetesServiceIpv4Cidr",
@@ -206,7 +219,8 @@
           "viewName": "Tags",
           "description": "The metadata to apply to the cluster to assist with categorization and organization. Each tag consists of a key and an optional value. You define them using \"KEY=VALUE\" syntax.",
           "placeholder": "ClusterMetadata1=SomeValue",
-          "type": "text"
+          "type": "text",
+          "parserType": "tags"
         },
         {
           "name": "encryptionResources",
@@ -214,24 +228,15 @@
           "description": "The resources to be encrypted. The only supported value is \"secrets\".",
           "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
           "placeholder": "secrets",
-          "type": "text"
+          "type": "text",
+          "parserType": "array"
         },
         {
-          "name": "encryptionResources",
+          "name": "encryptionKey",
           "viewName": "Cluster Encryption Provider Key",
           "description": "Amazon Resource Name (ARN) or alias of the KMS key. The KMS key must be symmetric, created in the same region as the cluster, and if the KMS key was created in a different account, the user must have access to the KMS key.",
           "learnUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
           "type": "string"
-        },
-        {
-          "name": "accessKeyId",
-          "viewName": "AWS Access Key ID",
-          "type": "vault"
-        },
-        {
-          "name": "secretAccessKey",
-          "viewName": "AWS Secret Access Key",
-          "type": "vault"
         }
       ]
     }
