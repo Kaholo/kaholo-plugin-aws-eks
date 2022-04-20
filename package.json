@@ -1,6 +1,6 @@
 {
-  "name": "kaholo-plugin-kubernetes",
-  "description": "Kubernetes API plugin for kaholo",
+  "name": "kaholo-plugin-aws-eks",
+  "description": "AWS EKS plugin for Kaholo",
   "main": "app.js",
   "scripts": {
     "lint": "npx eslint .",
