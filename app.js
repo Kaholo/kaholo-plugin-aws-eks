@@ -1,7 +1,7 @@
 const dayjs = require("dayjs");
 const EKSToken = require("aws-eks-token");
 
-const kaholo = require("kaholo-aws-library");
+const kaholo = require("aws-plugin-library");
 const aws = require("aws-sdk");
 const autocomplete = require("./autocomplete");
 

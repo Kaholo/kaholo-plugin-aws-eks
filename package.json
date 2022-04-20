@@ -12,7 +12,7 @@
     "aws-eks-token": "1.0.3",
     "aws-sdk": "2.1082.0",
     "dayjs": "1.10.4",
-    "kaholo-aws-library": "github:Kaholo/aws-plugin-library#v1.0.2"
+    "aws-plugin-library": "github:Kaholo/aws-plugin-library#v1.0.2"
   },
   "devDependencies": {
     "eslint": "8.8.0",
