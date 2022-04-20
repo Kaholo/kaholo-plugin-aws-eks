@@ -1,6 +1,6 @@
 {
-  "name": "kaholo-plugin-kubernetes",
-  "description": "Kubernetes API plugin for kaholo",
+  "name": "kaholo-plugin-aws-eks",
+  "description": "AWS EKS plugin for Kaholo",
   "main": "app.js",
   "scripts": {
     "lint": "npx eslint .",
@@ -9,13 +9,14 @@
   "author": "Kaholo Team(Amit Alon)",
   "license": "ISC",
   "dependencies": {
-    "aws-eks-token": "^1.0.3",
-    "aws-sdk": "^2.1082.0",
-    "dayjs": "^1.10.4"
+    "aws-eks-token": "1.0.3",
+    "aws-sdk": "2.1082.0",
+    "dayjs": "1.10.4",
+    "aws-plugin-library": "github:Kaholo/aws-plugin-library#v1.0.2"
   },
   "devDependencies": {
-    "eslint": "^8.8.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.4"
+    "eslint": "8.8.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-plugin-import": "2.25.4"
   }
 }

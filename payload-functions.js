@@ -1,50 +1,41 @@
 const { isObjectEmpty } = require("./helpers");
-const parsers = require("./parsers");
-
-function createPayloadForGetToken(params) {
-  const clusterName = parsers.string(params.clusterName);
-  const expires = parsers.integer(params.expires);
-  return { clusterName, expires };
-}
 
 function createPayloadForCreateCluster(params) {
-  const clusterName = parsers.string(params.clusterName);
-  const roleArn = parsers.autocomplete(params.roleArn);
-  const kubernetesVersion = parsers.string(params.kubernetesVersion);
   const resourcesVpcConfig = {
-    subnetIds: parsers.array(params.vpcSubnets),
-    securityGroupIds: parsers.array(params.vpcSecurityGroups),
-    endpointPrivateAccess: parsers.boolean(params.endpointPrivateAccess),
-    endpointPublicAccess: parsers.boolean(params.endpointPublicAccess),
+    subnetIds: params.vpcSubnets,
+    securityGroupIds: params.vpcSecurityGroups,
+    endpointPrivateAccess: params.endpointPrivateAccess,
+    endpointPublicAccess: params.endpointPublicAccess,
   };
+
   if (params.publicAccessCidrs) {
-    resourcesVpcConfig.publicAccessCidrs = parsers.array(params.publicAccessCidrs);
+    resourcesVpcConfig.publicAccessCidrs = params.publicAccessCidrs;
   }
   const kubernetesNetworkConfig = {
-    ipFamily: parsers.string(params.kubernetesIpFamily),
-    serviceIpv4Cidr: parsers.string(params.kubernetesServiceIpv4Cidr),
+    ipFamily: params.kubernetesIpFamily,
+    serviceIpv4Cidr: params.kubernetesServiceIpv4Cidr,
   };
   const logs = {
-    api: parsers.boolean(params.apiLogs),
-    audit: parsers.boolean(params.auditLogs),
-    authenticator: parsers.boolean(params.authenticatorLogs),
-    controllerManager: parsers.boolean(params.controllerManagerLogs),
-    scheduler: parsers.boolean(params.schedulerLogs),
+    api: params.apiLogs,
+    audit: params.auditLogs,
+    authenticator: params.authenticatorLogs,
+    controllerManager: params.controllerManagerLogs,
+    scheduler: params.schedulerLogs,
   };
-  const tags = parsers.object(params.tags);
+  const { tags } = params;
   const encryption = {
-    resources: parsers.array(params.encryptionResources),
+    resources: params.encryptionResources,
     provider: {
-      keyArn: parsers.string(params.encryptionResources),
+      keyArn: params.encryptionKey,
     },
   };
 
   const clusterParams = {
-    name: clusterName,
-    roleArn,
+    name: params.clusterName,
+    roleArn: params.roleArn,
   };
-  if (kubernetesVersion) {
-    clusterParams.version = kubernetesVersion;
+  if (params.kubernetesVersion) {
+    clusterParams.version = params.kubernetesVersion;
   }
   if (!isObjectEmpty(resourcesVpcConfig)) {
     clusterParams.resourcesVpcConfig = resourcesVpcConfig;
@@ -74,5 +65,4 @@ function createPayloadForCreateCluster(params) {
 
 module.exports = {
   createPayloadForCreateCluster,
-  createPayloadForGetToken,
 };
