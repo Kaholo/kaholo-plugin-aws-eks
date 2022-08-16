@@ -1,4 +1,4 @@
-const kaholo = require("aws-plugin-library");
+const kaholo = require("@kaholo/aws-plugin-library");
 const aws = require("aws-sdk");
 const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE } = require("./consts");
 
