@@ -6,7 +6,23 @@
   "execProgram": "node",
   "main": "app.js",
   "version": "1.2.1",
-  "description": "Integration with AWS EKS API",
+  "description": "Amazon Web Services managed service for Kubernetes",
+  "category": [
+    "Containers"
+  ],
+  "keywords": [
+    "eks",
+    "elastic",
+    "aws",
+    "amazon",
+    "cloud",
+    "kubernetes",
+    "k8s",
+    "pods",
+    "clusters",
+    "nodes",
+    "kubectl"
+  ],
   "settings": [
     {
       "name": "accessKeyId",
@@ -240,9 +256,5 @@
         }
       ]
     }
-  ],
-  "category": [
-    "CLOUD",
-    "CONTAINERS"
   ]
 }
