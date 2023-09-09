@@ -2,7 +2,7 @@
   "name": "aws-eks",
   "viewName": "AWS EKS",
   "type": "executer",
-  "imgUrl": "EKS.png",
+  "imgUrl": "logo.png",
   "execProgram": "node",
   "main": "app.js",
   "version": "1.2.1",
