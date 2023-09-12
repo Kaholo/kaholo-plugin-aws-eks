@@ -12,10 +12,8 @@ const CREDENTIAL_LABELS = {
   REGION: "region",
 };
 
-async function listRoles(query, parsedParams, client, region, { pluginSettings, actionParams }) {
-  const [params, settings] = [actionParams, pluginSettings]
-    .map(kaholo.autocomplete.mapAutocompleteFuncParamsToObject);
-  const credentials = kaholo.helpers.readCredentials(params, settings, CREDENTIAL_LABELS);
+async function listRoles(query, params) {
+  const credentials = kaholo.helpers.readCredentials(params, CREDENTIAL_LABELS);
   const iam = new aws.IAM(credentials);
   let roles;
   try {

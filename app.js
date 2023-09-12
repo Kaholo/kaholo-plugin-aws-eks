@@ -15,7 +15,7 @@ async function getToken(client, parameters) {
   EKSToken.config = getTokenConfig(parameters);
   const {
     clusterName,
-    expires
+    expires,
   } = parameters;
   const reqTime = dayjs();
   const dateFormat = "YYYY-MM-DDTHH:mm:ss[Z]";
@@ -50,6 +50,6 @@ module.exports = {
       ACCESS_KEY: "accessKeyId",
       SECRET_KEY: "secretAccessKey",
       REGION: "region",
-    }
+    },
   ),
 };
