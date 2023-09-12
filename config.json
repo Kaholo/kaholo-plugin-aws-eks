@@ -23,16 +23,37 @@
     "nodes",
     "kubectl"
   ],
+  "auth": {
+    "authId": "awsAccount",
+    "params": [
+      {
+        "name": "accessKeyId",
+        "viewName": "Access Key ID",
+        "type": "vault",
+        "required": true,
+        "description": "AWS Access Key ID to use for authentication",
+        "placeholder": "AKIAIOSFODNN7EXAMPLE",
+        "learnUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey"
+      },
+      {
+        "name": "secretAccessKey",
+        "viewName": "Secret Access Key",
+        "type": "vault",
+        "required": true,
+        "description": "AWS Secret Access Key to use for authentication",
+        "placeholder": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "learnUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey"
+      }
+    ]
+  },
   "settings": [
     {
-      "name": "accessKeyId",
-      "viewName": "AWS Access Key ID",
-      "type": "vault"
-    },
-    {
-      "name": "secretAccessKey",
-      "viewName": "AWS Secret Access Key",
-      "type": "vault"
+      "name": "region",
+      "viewName": "Default AWS Region",
+      "type": "string",
+      "description": "AWS Region to use by default",
+      "placeholder": "us-west-1",
+      "learnUrl": "https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints"
     }
   ],
   "methods": [
@@ -40,16 +61,6 @@
       "name": "getToken",
       "viewName": "Get Token",
       "params": [
-        {
-          "name": "accessKeyId",
-          "viewName": "AWS Access Key ID",
-          "type": "vault"
-        },
-        {
-          "name": "secretAccessKey",
-          "viewName": "AWS Secret Access Key",
-          "type": "vault"
-        },
         {
           "name": "clusterName",
           "viewName": "EKS Cluster Name",
@@ -82,16 +93,6 @@
       "viewName": "Create New Cluster",
       "description": "Creates an Amazon EKS control plane.",
       "params": [
-        {
-          "name": "accessKeyId",
-          "viewName": "AWS Access Key ID",
-          "type": "vault"
-        },
-        {
-          "name": "secretAccessKey",
-          "viewName": "AWS Secret Access Key",
-          "type": "vault"
-        },
         {
           "name": "clusterName",
           "viewName": "Cluster Name",

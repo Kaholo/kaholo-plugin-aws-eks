@@ -5,26 +5,30 @@ const kaholo = require("@kaholo/aws-plugin-library");
 const aws = require("aws-sdk");
 const autocomplete = require("./autocomplete");
 
-const { CREDENTIAL_LABELS } = require("./helpers");
+const { getTokenConfig } = require("./helpers");
 
 const {
   createPayloadForCreateCluster,
 } = require("./payload-functions");
 
-async function getToken(client, { expires, clusterName }, region, originalParams) {
-  EKSToken.config = kaholo.helpers.readCredentials(
-    originalParams.action.params,
-    originalParams.settings,
-    CREDENTIAL_LABELS,
-  );
+async function getToken(parameters) {
+  console.error(`TOP of getToken`)
+  EKSToken.config = getTokenConfig(parameters);
+  console.error(`EKSTOKEN: ${JSON.stringify(EKSToken.config)}`)
+  const {
+    clusterName,
+    expires
+  } = parameters;
   const reqTime = dayjs();
   const dateFormat = "YYYY-MM-DDTHH:mm:ss[Z]";
 
+  console.error(`CALLING EKSToken.renew`)
   const token = await EKSToken.renew(
     clusterName,
     expires,
     reqTime.utc().format(dateFormat),
   );
+  console.error(`TOKEN: ${JSON.stringify(token)}`)
 
   const { cluster } = await client.describeCluster({ name: clusterName }).promise();
   const expirationTimestamp = reqTime.add(expires, "s").utc().format(dateFormat);
@@ -46,6 +50,10 @@ module.exports = {
       createCluster,
     },
     autocomplete,
-    CREDENTIAL_LABELS,
+    {
+      ACCESS_KEY: "accessKeyId",
+      SECRET_KEY: "secretAccessKey",
+      REGION: "region",
+    }
   ),
 };

@@ -4,8 +4,13 @@ const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE } = require("./consts");
 
 const {
   roleFilter,
-  CREDENTIAL_LABELS,
 } = require("./helpers");
+
+const CREDENTIAL_LABELS = {
+  ACCESS_KEY: "accessKeyId",
+  SECRET_KEY: "secretAccessKey",
+  REGION: "region",
+};
 
 async function listRoles(query, parsedParams, client, region, { pluginSettings, actionParams }) {
   const [params, settings] = [actionParams, pluginSettings]
