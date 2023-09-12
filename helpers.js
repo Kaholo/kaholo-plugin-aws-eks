@@ -1,11 +1,5 @@
 const { EKS_SERVICE_URL } = require("./consts");
 
-// const CREDENTIAL_LABELS = {
-//   ACCESS_KEY: "accessKeyId",
-//   SECRET_KEY: "secretAccessKey",
-//   REGION: "region",
-// };
-
 function isObjectEmpty(ob) {
   return !!ob && Object.values(ob).filter(Boolean).length === 0;
 }
@@ -24,16 +18,15 @@ function roleFilter({ RoleName, AssumeRolePolicyDocument }) {
 }
 
 function getTokenConfig(parameters) {
-  console.error(`getTokenConfigparams: ${JSON.stringify(parameters)}`)
-  if (!parameters.config?.accessKeyId || !parameters.config?.secretAccessKey) {
+  if (!parameters.accessKeyId || !parameters.secretAccessKey) {
     throw new Error("Access Key ID and Secret Access Key are required parameters. Please specify them in the plugin account.");
   }
 
   return {
-    accessKeyId: parameters.config.accessKeyId,
-    secretAccessKey: parameters.config.secretAccessKey,
+    accessKeyId: parameters.accessKeyId,
+    secretAccessKey: parameters.secretAccessKey,
     // sessionToken: 'SESSION [Optional]',
-    region: parameters.config.region || "us-east-1",
+    region: parameters.region || "us-east-1",
   };
 }
 

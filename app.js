@@ -11,10 +11,8 @@ const {
   createPayloadForCreateCluster,
 } = require("./payload-functions");
 
-async function getToken(parameters) {
-  console.error(`TOP of getToken`)
+async function getToken(client, parameters) {
   EKSToken.config = getTokenConfig(parameters);
-  console.error(`EKSTOKEN: ${JSON.stringify(EKSToken.config)}`)
   const {
     clusterName,
     expires
@@ -22,13 +20,11 @@ async function getToken(parameters) {
   const reqTime = dayjs();
   const dateFormat = "YYYY-MM-DDTHH:mm:ss[Z]";
 
-  console.error(`CALLING EKSToken.renew`)
   const token = await EKSToken.renew(
     clusterName,
     expires,
     reqTime.utc().format(dateFormat),
   );
-  console.error(`TOKEN: ${JSON.stringify(token)}`)
 
   const { cluster } = await client.describeCluster({ name: clusterName }).promise();
   const expirationTimestamp = reqTime.add(expires, "s").utc().format(dateFormat);
