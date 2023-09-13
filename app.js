@@ -1,4 +1,3 @@
-const dayjs = require("dayjs");
 const EKSToken = require("aws-eks-token");
 
 const kaholo = require("@kaholo/aws-plugin-library");
@@ -15,21 +14,15 @@ async function getToken(client, parameters) {
   EKSToken.config = getTokenConfig(parameters);
   const {
     clusterName,
-    expires,
   } = parameters;
-  const reqTime = dayjs();
-  const dateFormat = "YYYY-MM-DDTHH:mm:ss[Z]";
 
+  // expiry is based in IAM role, setting here creates invalid token
   const token = await EKSToken.renew(
     clusterName,
-    expires,
-    reqTime.utc().format(dateFormat),
   );
 
   const { cluster } = await client.describeCluster({ name: clusterName }).promise();
-  const expirationTimestamp = reqTime.add(expires, "s").utc().format(dateFormat);
   return {
-    expirationTimestamp,
     token,
     clusterHost: cluster.endpoint,
     clusterCA: cluster.certificateAuthority.data,
