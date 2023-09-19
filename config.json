@@ -58,29 +58,6 @@
   ],
   "methods": [
     {
-      "name": "getToken",
-      "viewName": "Get Token",
-      "params": [
-        {
-          "name": "clusterName",
-          "viewName": "EKS Cluster Name",
-          "description": "The name of the cluster to generate token for.",
-          "placeholder": "prod",
-          "type": "string",
-          "required": true
-        },
-        {
-          "name": "region",
-          "viewName": "AWS Region",
-          "description": "The region to send service requests to. A region is a physical location around the world where the AWS data center is situated.",
-          "type": "autocomplete",
-          "autocompleteType": "function",
-          "functionName": "listRegions",
-          "required": true
-        }
-      ]
-    },
-    {
       "name": "createCluster",
       "viewName": "Create New Cluster",
       "description": "Creates an Amazon EKS control plane.",
@@ -246,6 +223,29 @@
           "description": "Amazon Resource Name (ARN) or alias of the KMS key. The KMS key must be symmetric, created in the same region as the cluster, and if the KMS key was created in a different account, the user must have access to the KMS key.",
           "learnUrl": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html",
           "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "getToken",
+      "viewName": "Get Token",
+      "params": [
+        {
+          "name": "clusterName",
+          "viewName": "EKS Cluster Name",
+          "description": "The name of the cluster to generate token for.",
+          "placeholder": "prod",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "region",
+          "viewName": "AWS Region",
+          "description": "The region to send service requests to. A region is a physical location around the world where the AWS data center is situated.",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listRegions",
+          "required": true
         }
       ]
     }
