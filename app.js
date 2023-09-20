@@ -1,35 +1,28 @@
-const dayjs = require("dayjs");
 const EKSToken = require("aws-eks-token");
 
 const kaholo = require("@kaholo/aws-plugin-library");
 const aws = require("aws-sdk");
 const autocomplete = require("./autocomplete");
 
-const { CREDENTIAL_LABELS } = require("./helpers");
+const { getTokenConfig } = require("./helpers");
 
 const {
   createPayloadForCreateCluster,
 } = require("./payload-functions");
 
-async function getToken(client, { expires, clusterName }, region, originalParams) {
-  EKSToken.config = kaholo.helpers.readCredentials(
-    originalParams.action.params,
-    originalParams.settings,
-    CREDENTIAL_LABELS,
-  );
-  const reqTime = dayjs();
-  const dateFormat = "YYYY-MM-DDTHH:mm:ss[Z]";
+async function getToken(client, parameters) {
+  EKSToken.config = getTokenConfig(parameters);
+  const {
+    clusterName,
+  } = parameters;
 
+  // expiry is based in IAM role, setting here creates invalid token
   const token = await EKSToken.renew(
     clusterName,
-    expires,
-    reqTime.utc().format(dateFormat),
   );
 
   const { cluster } = await client.describeCluster({ name: clusterName }).promise();
-  const expirationTimestamp = reqTime.add(expires, "s").utc().format(dateFormat);
   return {
-    expirationTimestamp,
     token,
     clusterHost: cluster.endpoint,
     clusterCA: cluster.certificateAuthority.data,
@@ -46,6 +39,10 @@ module.exports = {
       createCluster,
     },
     autocomplete,
-    CREDENTIAL_LABELS,
+    {
+      ACCESS_KEY: "accessKeyId",
+      SECRET_KEY: "secretAccessKey",
+      REGION: "region",
+    },
   ),
 };

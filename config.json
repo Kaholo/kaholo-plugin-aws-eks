@@ -2,80 +2,66 @@
   "name": "aws-eks",
   "viewName": "AWS EKS",
   "type": "executer",
-  "imgUrl": "EKS.png",
+  "imgUrl": "logo.png",
   "execProgram": "node",
   "main": "app.js",
   "version": "1.2.1",
-  "description": "Integration with AWS EKS API",
+  "description": "Amazon Web Services managed service for Kubernetes",
+  "category": [
+    "Containers"
+  ],
+  "keywords": [
+    "eks",
+    "elastic",
+    "aws",
+    "amazon",
+    "cloud",
+    "kubernetes",
+    "k8s",
+    "pods",
+    "clusters",
+    "nodes",
+    "kubectl"
+  ],
+  "auth": {
+    "authId": "awsAccount",
+    "params": [
+      {
+        "name": "accessKeyId",
+        "viewName": "Access Key ID",
+        "type": "vault",
+        "required": true,
+        "description": "AWS Access Key ID to use for authentication",
+        "placeholder": "AKIAIOSFODNN7EXAMPLE",
+        "learnUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey"
+      },
+      {
+        "name": "secretAccessKey",
+        "viewName": "Secret Access Key",
+        "type": "vault",
+        "required": true,
+        "description": "AWS Secret Access Key to use for authentication",
+        "placeholder": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "learnUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey"
+      }
+    ]
+  },
   "settings": [
     {
-      "name": "accessKeyId",
-      "viewName": "AWS Access Key ID",
-      "type": "vault"
-    },
-    {
-      "name": "secretAccessKey",
-      "viewName": "AWS Secret Access Key",
-      "type": "vault"
+      "name": "region",
+      "viewName": "Default AWS Region",
+      "type": "string",
+      "description": "AWS Region to use by default",
+      "placeholder": "us-west-1",
+      "learnUrl": "https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints"
     }
   ],
   "methods": [
-    {
-      "name": "getToken",
-      "viewName": "Get Token",
-      "params": [
-        {
-          "name": "accessKeyId",
-          "viewName": "AWS Access Key ID",
-          "type": "vault"
-        },
-        {
-          "name": "secretAccessKey",
-          "viewName": "AWS Secret Access Key",
-          "type": "vault"
-        },
-        {
-          "name": "clusterName",
-          "viewName": "EKS Cluster Name",
-          "description": "The name of the cluster to generate token for.",
-          "placeholder": "prod",
-          "type": "string",
-          "required": true
-        },
-        {
-          "name": "region",
-          "viewName": "AWS Region",
-          "description": "The region to send service requests to. A region is a physical location around the world where the AWS data center is situated.",
-          "type": "autocomplete",
-          "autocompleteType": "function",
-          "functionName": "listRegions",
-          "required": true
-        },
-        {
-          "name": "expires",
-          "viewName": "Expires In",
-          "description": "A time (in seconds) after the token should be considered expired.",
-          "placeholder": "60",
-          "default": "60",
-          "type": "string"
-        }
-      ]
-    },
     {
       "name": "createCluster",
       "viewName": "Create New Cluster",
       "description": "Creates an Amazon EKS control plane.",
       "params": [
-        {
-          "name": "accessKeyId",
-          "viewName": "AWS Access Key ID",
-          "type": "vault"
-        },
-        {
-          "name": "secretAccessKey",
-          "viewName": "AWS Secret Access Key",
-          "type": "vault"
-        },
         {
           "name": "clusterName",
           "viewName": "Cluster Name",
@@ -239,10 +225,29 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "name": "getToken",
+      "viewName": "Get Token",
+      "params": [
+        {
+          "name": "clusterName",
+          "viewName": "EKS Cluster Name",
+          "description": "The name of the cluster to generate token for.",
+          "placeholder": "prod",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "region",
+          "viewName": "AWS Region",
+          "description": "The region to send service requests to. A region is a physical location around the world where the AWS data center is situated.",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listRegions",
+          "required": true
+        }
+      ]
     }
-  ],
-  "category": [
-    "CLOUD",
-    "CONTAINERS"
   ]
 }

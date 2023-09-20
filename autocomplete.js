@@ -4,13 +4,16 @@ const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE } = require("./consts");
 
 const {
   roleFilter,
-  CREDENTIAL_LABELS,
 } = require("./helpers");
 
-async function listRoles(query, parsedParams, client, region, { pluginSettings, actionParams }) {
-  const [params, settings] = [actionParams, pluginSettings]
-    .map(kaholo.autocomplete.mapAutocompleteFuncParamsToObject);
-  const credentials = kaholo.helpers.readCredentials(params, settings, CREDENTIAL_LABELS);
+const CREDENTIAL_LABELS = {
+  ACCESS_KEY: "accessKeyId",
+  SECRET_KEY: "secretAccessKey",
+  REGION: "region",
+};
+
+async function listRoles(query, params) {
+  const credentials = kaholo.helpers.readCredentials(params, CREDENTIAL_LABELS);
   const iam = new aws.IAM(credentials);
   let roles;
   try {
