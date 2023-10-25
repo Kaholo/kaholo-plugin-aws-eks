@@ -1,6 +1,11 @@
-const { EKSClient, CreateClusterCommand, DescribeClusterCommand } = require("@aws-sdk/client-eks");
 const EKSToken = require("aws-eks-token");
 const awsPluginLibrary = require("@kaholo/aws-plugin-library");
+const {
+  EKSClient,
+  CreateClusterCommand,
+  DescribeClusterCommand,
+  waitUntilClusterActive,
+} = require("@aws-sdk/client-eks");
 
 const autocomplete = require("./autocomplete");
 const { getTokenConfig } = require("./helpers");
@@ -19,8 +24,9 @@ async function getToken(client, parameters) {
     clusterName,
   );
 
-  const command = new DescribeClusterCommand({ name: clusterName });
-  const { cluster } = await client.send(command);
+  const { cluster } = await client.send(
+    new DescribeClusterCommand({ name: clusterName }),
+  );
 
   return {
     token,
@@ -29,10 +35,25 @@ async function getToken(client, parameters) {
   };
 }
 
-const createCluster = awsPluginLibrary.generateAwsMethod(
-  CreateClusterCommand,
-  prepareCreateClusterPayload,
-);
+async function createCluster(client, params, region) {
+  const awsCreateCluster = awsPluginLibrary.generateAwsMethod(
+    CreateClusterCommand,
+    prepareCreateClusterPayload,
+  );
+  const { cluster } = await awsCreateCluster(client, params, region);
+
+  if (!params.waitForActiveStatus) {
+    return cluster;
+  }
+
+  const clusterName = cluster.name;
+  await waitUntilClusterActive({ client }, {
+    name: clusterName,
+  });
+  return client.send(
+    new DescribeClusterCommand({ name: clusterName }),
+  );
+}
 
 module.exports = awsPluginLibrary.bootstrap(
   EKSClient,
