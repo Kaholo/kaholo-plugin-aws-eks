@@ -12,6 +12,7 @@ const { getTokenConfig } = require("./helpers");
 const {
   prepareCreateClusterPayload,
 } = require("./payload-functions");
+const { CREDENTIAL_KEYS } = require("./consts");
 
 async function getToken(client, parameters) {
   const {
@@ -62,9 +63,5 @@ module.exports = awsPluginLibrary.bootstrap(
     createCluster,
   },
   autocomplete,
-  {
-    ACCESS_KEY: "accessKeyId",
-    SECRET_KEY: "secretAccessKey",
-    REGION: "region",
-  },
+  CREDENTIAL_KEYS,
 );
