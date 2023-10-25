@@ -1,27 +1,27 @@
+const { EKSClient, CreateClusterCommand, DescribeClusterCommand } = require("@aws-sdk/client-eks");
 const EKSToken = require("aws-eks-token");
+const awsPluginLibrary = require("@kaholo/aws-plugin-library");
 
-const kaholo = require("@kaholo/aws-plugin-library");
-const aws = require("aws-sdk");
 const autocomplete = require("./autocomplete");
-
 const { getTokenConfig } = require("./helpers");
-
 const {
-  createPayloadForCreateCluster,
+  prepareCreateClusterPayload,
 } = require("./payload-functions");
 
 async function getToken(client, parameters) {
-  EKSToken.config = getTokenConfig(parameters);
   const {
     clusterName,
   } = parameters;
+  EKSToken.config = getTokenConfig(parameters);
 
   // expiry is based in IAM role, setting here creates invalid token
   const token = await EKSToken.renew(
     clusterName,
   );
 
-  const { cluster } = await client.describeCluster({ name: clusterName }).promise();
+  const command = new DescribeClusterCommand({ name: clusterName });
+  const { cluster } = await client.send(command);
+
   return {
     token,
     clusterHost: cluster.endpoint,
@@ -29,20 +29,21 @@ async function getToken(client, parameters) {
   };
 }
 
-const createCluster = kaholo.generateAwsMethod("createCluster", createPayloadForCreateCluster);
+const createCluster = awsPluginLibrary.generateAwsMethod(
+  CreateClusterCommand,
+  prepareCreateClusterPayload,
+);
 
-module.exports = {
-  ...kaholo.bootstrap(
-    aws.EKS,
-    {
-      getToken,
-      createCluster,
-    },
-    autocomplete,
-    {
-      ACCESS_KEY: "accessKeyId",
-      SECRET_KEY: "secretAccessKey",
-      REGION: "region",
-    },
-  ),
-};
+module.exports = awsPluginLibrary.bootstrap(
+  EKSClient,
+  {
+    getToken,
+    createCluster,
+  },
+  autocomplete,
+  {
+    ACCESS_KEY: "accessKeyId",
+    SECRET_KEY: "secretAccessKey",
+    REGION: "region",
+  },
+);
