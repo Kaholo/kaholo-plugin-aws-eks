@@ -11,7 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-eks": "^3.435.0",
     "@aws-sdk/client-iam": "^3.435.0",
-    "@kaholo/aws-plugin-library": "^4.0.0",
+    "@kaholo/aws-plugin-library": "^4.0.1",
     "aws-eks-token": "1.0.3",
     "dayjs": "1.10.4"
   },
