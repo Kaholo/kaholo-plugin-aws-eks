@@ -1,8 +1,11 @@
-const MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE = "Missing or incorrect credentials - please select valid access and secret keys first";
-
 const EKS_SERVICE_URL = "eks.amazonaws.com";
+const CREDENTIAL_KEYS = {
+  ACCESS_KEY: "accessKeyId",
+  SECRET_KEY: "secretAccessKey",
+  REGION: "region",
+};
 
 module.exports = {
-  MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE,
   EKS_SERVICE_URL,
+  CREDENTIAL_KEYS,
 };

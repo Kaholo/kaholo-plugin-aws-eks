@@ -1,6 +1,6 @@
 const { isObjectEmpty } = require("./helpers");
 
-function createPayloadForCreateCluster(params) {
+function prepareCreateClusterPayload(params) {
   const resourcesVpcConfig = {
     subnetIds: params.vpcSubnets,
     securityGroupIds: params.vpcSecurityGroups,
@@ -64,5 +64,5 @@ function createPayloadForCreateCluster(params) {
 }
 
 module.exports = {
-  createPayloadForCreateCluster,
+  prepareCreateClusterPayload,
 };
