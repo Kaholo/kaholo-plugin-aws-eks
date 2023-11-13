@@ -206,7 +206,7 @@
           "description": "The metadata to apply to the cluster to assist with categorization and organization. Each tag consists of a key and an optional value. You define them using \"KEY=VALUE\" syntax.",
           "placeholder": "ClusterMetadata1=SomeValue",
           "type": "text",
-          "parserType": "tags"
+          "parserType": "keyValuePairs"
         },
         {
           "name": "encryptionResources",
