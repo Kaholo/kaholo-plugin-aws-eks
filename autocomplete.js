@@ -10,15 +10,12 @@ const {
 const { CREDENTIAL_KEYS } = require("./consts");
 
 async function listRoles(query, params) {
-  const { credentials, region } = kaholo.helpers.readCredentials(params, CREDENTIAL_KEYS);
-  const iamClient = new IAMClient({
-    credentials,
-    region,
-  });
+  const credentials = kaholo.helpers.readCredentials(params, CREDENTIAL_KEYS);
+  const iamClient = new IAMClient(credentials);
 
   let roles;
   try {
-    roles = await iamClient.send(new ListRolesCommand({}));
+    roles = await iamClient.send(new ListRolesCommand());
   } catch (err) {
     console.error(err);
     throw new Error("Missing or incorrect credentials - please select valid access and secret keys first");

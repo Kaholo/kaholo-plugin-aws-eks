@@ -1,4 +1,3 @@
-const EKSToken = require("aws-eks-token");
 const awsPluginLibrary = require("@kaholo/aws-plugin-library");
 const {
   EKSClient,
@@ -8,26 +7,17 @@ const {
 } = require("@aws-sdk/client-eks");
 
 const autocomplete = require("./autocomplete");
-const { getTokenConfig } = require("./helpers");
-const {
-  prepareCreateClusterPayload,
-} = require("./payload-functions");
+const { fetchToken } = require("./helpers");
+const { prepareCreateClusterPayload } = require("./payload-functions");
 const { CREDENTIAL_KEYS } = require("./consts");
 
 async function getToken(client, parameters) {
-  const {
-    clusterName,
-  } = parameters;
-  EKSToken.config = getTokenConfig(parameters);
-
-  // expiry is based in IAM role, setting here creates invalid token
-  const token = await EKSToken.renew(
-    clusterName,
-  );
+  const { clusterName } = parameters;
 
   const { cluster } = await client.send(
     new DescribeClusterCommand({ name: clusterName }),
   );
+  const token = await fetchToken(parameters);
 
   return {
     token,
