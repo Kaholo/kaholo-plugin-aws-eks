@@ -12,8 +12,9 @@
     "@aws-crypto/sha256-js": "^5.2.0",
     "@aws-sdk/client-eks": "^3.435.0",
     "@aws-sdk/client-iam": "^3.435.0",
-    "@kaholo/aws-plugin-library": "github:Kaholo/aws-plugin-library#07f5ee342b50bbb2bf56e0008e89f9b5ec05e9a4",
-    "@smithy/signature-v4": "^2.0.12"
+    "@kaholo/aws-plugin-library": "github:Kaholo/aws-plugin-library#0f26666540ba7a6d366beaf2274f572ab85e9478",
+    "@smithy/signature-v4": "^2.0.12",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "eslint": "8.8.0",
