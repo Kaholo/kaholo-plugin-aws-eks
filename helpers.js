@@ -40,6 +40,7 @@ async function fetchToken(params) {
   const signer = new SignatureV4({
     credentials: tokenConfig,
     region: tokenConfig.region,
+    service: "sts",
     sha256: Sha256,
   });
 
