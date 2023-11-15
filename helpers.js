@@ -72,8 +72,13 @@ async function fetchToken(params) {
   return token;
 }
 
+function generateRandomString() {
+  return Math.random().toString(36).slice(2);
+}
+
 module.exports = {
   isObjectEmpty,
   fetchToken,
   roleFilter,
+  generateRandomString,
 };

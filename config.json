@@ -5,7 +5,7 @@
   "imgUrl": "logo.png",
   "execProgram": "node",
   "main": "app.js",
-  "version": "1.2.1",
+  "version": "1.2.1-KP-1407",
   "description": "Amazon Web Services managed service for Kubernetes",
   "category": [
     "Containers"
@@ -251,6 +251,37 @@
           "type": "autocomplete",
           "autocompleteType": "function",
           "functionName": "listRegions",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "runKubectlCommand",
+      "viewName": "Run Kubectl Command",
+      "params": [
+        {
+          "name": "clusterName",
+          "viewName": "EKS Cluster Name",
+          "description": "The name of the cluster to use in the kubectl configuration",
+          "placeholder": "testdev-a",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "region",
+          "viewName": "AWS Region",
+          "description": "The region where the cluster is located",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listRegions",
+          "required": true
+        },
+        {
+          "name": "command",
+          "viewName": "Command",
+          "description": "Any command that starts with \"kubectl\"",
+          "placeholder": "kubectl get pods --all-namespaces",
+          "type": "string",
           "required": true
         }
       ]

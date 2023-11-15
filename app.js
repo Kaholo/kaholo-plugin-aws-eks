@@ -10,6 +10,7 @@ const autocomplete = require("./autocomplete");
 const { fetchToken } = require("./helpers");
 const { prepareCreateClusterPayload } = require("./payload-functions");
 const { CREDENTIAL_KEYS } = require("./consts");
+const kubectl = require("./kubectl");
 
 async function getToken(client, parameters) {
   const { clusterName } = parameters;
@@ -46,11 +47,33 @@ async function createCluster(client, params, region) {
   );
 }
 
+async function runKubectlCommand(client, parameters) {
+  const {
+    clusterName,
+    command,
+  } = parameters;
+
+  const { cluster } = await client.send(
+    new DescribeClusterCommand({ name: clusterName }),
+  );
+  const token = await fetchToken(parameters);
+
+  kubeCtlConfig = {
+    kubeToken: token,
+    kubeApiServer: cluster.endpoint,
+    kubeCertificate: cluster.certificateAuthority.data,
+    command: command,
+  };
+
+  return kubectl.runCommand(kubeCtlConfig)
+}
+
 module.exports = awsPluginLibrary.bootstrap(
   EKSClient,
   {
     getToken,
     createCluster,
+    runKubectlCommand,
   },
   autocomplete,
   CREDENTIAL_KEYS,

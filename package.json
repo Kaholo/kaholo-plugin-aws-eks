@@ -13,8 +13,7 @@
     "@aws-sdk/client-eks": "^3.435.0",
     "@aws-sdk/client-iam": "^3.435.0",
     "@kaholo/aws-plugin-library": "github:Kaholo/aws-plugin-library#29817757f67ad2211af34780b2f589ce1221b484",
-    "@smithy/signature-v4": "^2.0.12",
-    "dayjs": "1.10.4"
+    "@smithy/signature-v4": "^2.0.12"
   },
   "devDependencies": {
     "eslint": "8.8.0",
