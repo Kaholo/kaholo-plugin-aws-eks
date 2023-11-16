@@ -5,7 +5,7 @@
   "imgUrl": "logo.png",
   "execProgram": "node",
   "main": "app.js",
-  "version": "1.2.1-KP-1407",
+  "version": "1.2.1",
   "description": "Amazon Web Services managed service for Kubernetes",
   "category": [
     "Containers"
