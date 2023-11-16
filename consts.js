@@ -5,7 +5,11 @@ const CREDENTIAL_KEYS = {
   REGION: "region",
 };
 
+// this image is 77MB in size
+const KUBECTL_DOCKER_IMAGE = "bitnami/kubectl:1.28.3";
+
 module.exports = {
   EKS_SERVICE_URL,
   CREDENTIAL_KEYS,
+  KUBECTL_DOCKER_IMAGE,
 };

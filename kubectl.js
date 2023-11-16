@@ -3,9 +3,7 @@ const exec = util.promisify(require("child_process").exec);
 const { docker, helpers } = require("@kaholo/plugin-library");
 
 const { generateRandomString } = require("./helpers");
-
-// this image is 77MB in size
-const KUBECTL_IMAGE_NAME = "bitnami/kubectl:1.28.3";
+const { KUBECTL_DOCKER_IMAGE } = require("./consts");
 
 const environmentalVariablesNames = {
   kubeCertificate: "KUBE_CERT",
@@ -58,7 +56,7 @@ ${sanitizeCommand(command)}\
 
   const dockerCommand = docker.buildDockerCommand({
     command: aggregatedCommand,
-    image: KUBECTL_IMAGE_NAME,
+    image: KUBECTL_DOCKER_IMAGE,
     additionalArguments: ["--entrypoint", "\"\""], // ignores default entrypoint and allows to call any command
     volumeDefinitionsArray: [workingDirectoryVolumeDefinition],
     workingDirectory: `$${workingDirectoryVolumeDefinition.mountPoint.name}`,
