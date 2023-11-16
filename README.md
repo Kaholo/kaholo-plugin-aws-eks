@@ -122,23 +122,27 @@ Specify "secrets" if those are to be encrypted.
 Provide the Amazon Resource Name (ARN) or alias of the KMS key if secrets are to be encrypted.
 
 ## Method: Get Token
-This method gets a JWT token for an EKS cluster. The Final Result returns the expiry, token, end point, and CA certificate of the cluster. For example:
+The method to get a JWT token for the EKS cluster was made redundant for several reasons:
+* EKS tokens are short-lived, so getting the token is included as a step in all methods that need one, e.g. Run Kubectl Command.
+* Using a "Get Token" method would leave the token exposed in Final Result, a security risk.
 
-    {
-    "expirationTimestamp": "2023-09-13T07:30:43Z",
-    "token": "k8s-aws-v1.aHR0cHM6Ly9zdHMuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbS8_QWN0aW9uPUdldENhbGxlcklkZW50aXR5JlZlcnNpb249MjAxMS0wNi0xNSZYLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUEzTFFKNjdEVVpUQzRUUFA1JTJGMjAyMy0wOS0lMkZhcC1zb3V0aGVhc3QtMSUyRnN0cyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMtMDktMTNUMDU6NTA6NDNaJlgtQW16LUV4cGlyZXM9NjAwMCZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QlM0J4LWs4cy1hd3MtaWQmWC1BbXotU2lnbmF0dXJlPTg4NDc5YTNkZjQ4YmY5NmZlMDI2YjEyZWNjZDcwNzZmYWMxNWE3ODE3NmJkZWJlNmI3NWM0ZDBlY2EzYmZmYmU",
-    "clusterHost": "https://5AA439DC12D626AC5947F7C37A406285.gr7.ap-southeast-1.eks.amazonaws.com",
-    "clusterCA": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJSFo2OTJaOE9QRkV3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TXpBNU1UTXdOVE16TkRWYUZ3MHpNekE1TVRBd05UTXpORFZhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURJekRsMHRyNU1VOW1WUUFHNUpFNVV0ZVF3dTd6WklKNjRSOTlnSmNEbFE3SDlzbmFpYUQ1N1hzNzIKd2dVL1BkdDA3NDZwdFQ5NVB4NUJrQ0JXaHJNY1BLS0pnbk9pL1hlVFZsdUNHVnNYLzJUSDBwZ2tIeXJYbTBvMgpjd2QxUDN3a01mR0JvRHhtUFhtRUx6c05UR1p1NUFFS3FKemp4bUVPU3RNSE1LK0hxc2g0N2ZnSFpBYXhQSDVoCkpSRFZ1b3Foa2x2Rlg1V0hsT01LbW9JSnU3UEh0ZllOV0VpaFJtMWw1ZUY0NGhLTWpobTBWbk1adFY4Tmcva0kKN2N3cENjMlZtd0FpTGlHbytpeDhzVHlRZ1hKbWNrUnhpMDlSR2hMTU5kanBObGx2WG10amdSMVplSSs4aXQvNApsT1dMaEViYUk2TGF5YmFsbXYrOUErS2o0Y1pYQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJRK29uR3ZRd2JRQU02MU44WCtIWHUySVcyTnN6QVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQ0J5RHhoTUdwcQpPemxINTd2MzFJc2ltazNFdHozU1ptZmlkWWNSYUEvSnMyK09tZVRHV2JwTDV0THRISGNySHByaHBkUzZ1WVRZCkpFRktnb3Q5RDFZWVg0Y0ZIQU9ONnRORmlpbklFZDBEV00wSUN3cGhiVVBxR2lTbmZZUzdzQmNFYnlPUzN6azcKZFhEdzRvN2JCMm5CYlNWd3kwNHBqNkdZL3lxaldPTjdtV0YyTFlaQ0VoZDNEUzUrbXZ5Zk9LRkZBbjVVcTI5OQpqam42VTVtcVhxU0pja3BFeE5SUzg5YWtxN1hJd04vdUk1aU1uNmhkQUk2Mk45aGhMU1BWMk5Kb3M2MS9iT3c2ClZvRkduUWhza3lCRXpBWUJJTno2TklETVFwVWEzdlQ4a0h1ODd1cnVYVzlhQTdFSmVCWE9YQ3daM0daL1UwWTYKa0Q0Z3hKRmlyVVovCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
-    }
+If for some reason getting a token and exposing it in Final Result is required for a use case, use AWS CLI plugin with command `aws eks get-token` instead.
 
-Note the default expiry for an EKS token is short - one hour - and the maximum configurable expiry is seven days. This forces users to continuously provide AWS credentials in order to continue using the cluster, which is good for security but not automation. Using the recommended AWS methods would leave AWS credentials exposed on the Kaholo Agent.
-
-As of Q4 2023, to use EKS a Kaholo user must run this method to get a valid token, copy the token into the Kaholo vault, and then create or reconfigure a plugin account for the Kubernetes or Helm plugin to use that token before it expires.
-
-A more ideal way to manage the token would be a customized EKS-Kubernetes plugin that uses AWS credentials to get a token and then use the token to operate Kuberentes in a single method - effectively getting a new token with each action. If there is interest in such a plugin, please [let us know](https://kaholo.io/contact/).
+## Method: Run Kubectl Command
+This method gets a new EKS token and then uses it to run any `kubectl` command, for example `kubectl get pods --all-namespaces`. If a command references files use a path relative to the Working Directory, as explained in detail below.
 
 ### Parameter: EKS Cluster Name
-The name of the EKS Cluster for which a token is requested.
+The name of the EKS Cluster to which the kubectl command will be directed.
 
 ### Parameter: AWS Region
 The AWS Region in which the cluster can be found.
+
+### Parameter: Working Directory
+The directory on the Kaholo agent if and where interaction with the file system is required. For example if a YAML kuberentes deployment is located in a project's code repository that has been cloned into the default working directory using the Git plugin, the working directory might be `myproject/kube-yaml` and the command might then be `kubectl apply -f deployment-dev.yml -n development`.
+
+Either relative or absolute path may be used. If no path is given, the Kaholo agent's default working directory is used instead. For example on a default Kaholo agent, that's `/twiddlebug/workspace`. Using the previous example, Working Directory may be left blank and the command changed to `kubectl apply -f myproject/kube-yaml/deployment-dev.yml -n development`, or Working Directory could be `/twiddlebug/workspace/myproject/kube-yaml` and the command left as in the previous example.
+
+Kubectl is run in a docker container and Working Directory is mounted as a docker volume for that container. Files located inside the Working Directory remain consistent both on the Kaholo Agent and in the docker container during and after execution.
+
+A command making use of or creating files outside of the Working Directory is likely to fail because while the required/expected files might exist on the Kaholo Agent's filesystem or inside the docker container, they won't exist in the container or on the Kaholo Agent when needed or as expected after execution.
+
