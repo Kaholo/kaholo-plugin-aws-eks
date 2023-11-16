@@ -1,7 +1,6 @@
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
-const path = require("path");
-const { docker } = require("@kaholo/plugin-library");
+const { docker, helpers } = require("@kaholo/plugin-library");
 
 const { generateRandomString } = require("./helpers");
 
@@ -25,6 +24,7 @@ async function runCommand(params) {
     kubeToken,
     kubeApiServer,
     command,
+    workingDirectory,
   } = params;
 
   const shellEnvironmentalVariables = {};
@@ -32,15 +32,18 @@ async function runCommand(params) {
   shellEnvironmentalVariables[environmentalVariablesNames.kubeToken] = kubeToken;
   shellEnvironmentalVariables[environmentalVariablesNames.kubeApiServer] = kubeApiServer;
 
-  const clusterName = `cluster_${generateRandomString()}`;
-  const userName = `user_${generateRandomString()}`;
-  const contextName = `context_${generateRandomString()}`;
+  const workDir = workingDirectory || await helpers.analyzePath("./");
+  const absoluteWorkingDirectory = workDir.absolutePath;
 
-  const workingDirectoryVolumeDefinition = docker.createVolumeDefinition(path.resolve("./"));
+  const workingDirectoryVolumeDefinition = docker.createVolumeDefinition(absoluteWorkingDirectory);
   // eslint-disable-next-line max-len
   shellEnvironmentalVariables[workingDirectoryVolumeDefinition.path.name] = workingDirectoryVolumeDefinition.path.value;
   // eslint-disable-next-line max-len
   shellEnvironmentalVariables[workingDirectoryVolumeDefinition.mountPoint.name] = workingDirectoryVolumeDefinition.mountPoint.value;
+
+  const clusterName = `cluster_${generateRandomString()}`;
+  const userName = `user_${generateRandomString()}`;
+  const contextName = `context_${generateRandomString()}`;
 
   // First command doesn't need kubectl prefix
   const aggregatedCommand = `\

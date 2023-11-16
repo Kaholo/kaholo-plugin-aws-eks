@@ -254,6 +254,18 @@
           "required": true
         },
         {
+          "name": "workingDirectory",
+          "viewName": "Working Directory",
+          "type": "string",
+          "description": "Optional path on Kaholo agent to use as working directory, for commands using files",
+          "placeholder": "myproject/kubeyml",
+          "parserType": "filePath",
+          "parserOptions": {
+            "throwIfDoesntExist": true,
+            "acceptedTypes": ["directory"]
+          }
+        },
+        {
           "name": "command",
           "viewName": "Command",
           "description": "Any command that starts with \"kubectl\"",

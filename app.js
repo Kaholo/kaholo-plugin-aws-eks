@@ -36,6 +36,7 @@ async function runKubectlCommand(client, parameters) {
   const {
     clusterName,
     command,
+    workingDirectory,
   } = parameters;
 
   const { cluster } = await client.send(
@@ -48,6 +49,7 @@ async function runKubectlCommand(client, parameters) {
     kubeApiServer: cluster.endpoint,
     kubeCertificate: cluster.certificateAuthority.data,
     command,
+    workingDirectory,
   };
 
   return kubectl.runCommand(kubeCtlConfig);
