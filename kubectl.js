@@ -15,6 +15,10 @@ const environmentalVariablesNames = {
   namespace: "KUBE_NAMESPACE",
 };
 
+function sanitizeCommand(command) {
+  return command.startsWith("kubectl") ? command : `kubectl ${command}`;
+}
+
 async function runCommand(params) {
   const {
     kubeCertificate,
@@ -69,10 +73,6 @@ ${sanitizeCommand(command)}\
   }
 
   return stdout;
-}
-
-function sanitizeCommand(command) {
-  return command.startsWith("kubectl") ? command : `kubectl ${command}`;
 }
 
 module.exports = {

@@ -233,29 +233,6 @@
       ]
     },
     {
-      "name": "getToken",
-      "viewName": "Get Token",
-      "params": [
-        {
-          "name": "clusterName",
-          "viewName": "EKS Cluster Name",
-          "description": "The name of the cluster to generate token for.",
-          "placeholder": "prod",
-          "type": "string",
-          "required": true
-        },
-        {
-          "name": "region",
-          "viewName": "AWS Region",
-          "description": "The region to send service requests to. A region is a physical location around the world where the AWS data center is situated.",
-          "type": "autocomplete",
-          "autocompleteType": "function",
-          "functionName": "listRegions",
-          "required": true
-        }
-      ]
-    },
-    {
       "name": "runKubectlCommand",
       "viewName": "Run Kubectl Command",
       "params": [
