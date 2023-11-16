@@ -21,7 +21,11 @@
     "pods",
     "clusters",
     "nodes",
-    "kubectl"
+    "kubectl",
+    "fargate",
+    "deployments",
+    "services",
+    "tokens"
   ],
   "auth": {
     "authId": "awsAccount",
@@ -66,7 +70,7 @@
           "name": "clusterName",
           "viewName": "Cluster Name",
           "description": "The unique name to give to your cluster.",
-          "placeholder": "prod",
+          "placeholder": "prod-a",
           "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
           "type": "string",
           "required": true
@@ -114,16 +118,18 @@
         {
           "name": "endpointPublicAccess",
           "viewName": "Public Access",
-          "description": "Set this value to false to disable public access to your cluster's Kubernetes API server endpoint. If you disable public access, your cluster's Kubernetes API server can only receive requests from within the cluster VPC. The default value for this parameter is true, which enables public access for your Kubernetes API server.",
+          "description": "Set this value to false to disable public access to your cluster's Kubernetes API server endpoint. If you disable public access, your cluster's Kubernetes API server can only receive requests from within the cluster VPC.",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html",
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         {
           "name": "endpointPrivateAccess",
           "viewName": "Private Access",
-          "description": "Set this value to true to enable private access for your cluster's Kubernetes API server endpoint. If you enable private access, Kubernetes API requests from within your cluster's VPC use the private VPC endpoint. The default value for this parameter is false, which disables private access for your Kubernetes API server. If you disable private access and you have nodes or Fargate pods in the cluster, then ensure that Public Access CIDRs param includes the necessary CIDR blocks for communication with the nodes or Fargate pods.",
+          "description": "Set this value to true to enable private access for your cluster's Kubernetes API server endpoint. If you enable private access, Kubernetes API requests from within your cluster's VPC use the private VPC endpoint. If you disable private access and you have nodes or Fargate pods in the cluster, then ensure that Public Access CIDRs param includes the necessary CIDR blocks for communication with the nodes or Fargate pods.",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         {
           "name": "publicAccessCidrs",
@@ -146,6 +152,8 @@
           "description": "IP version to be used to assign Kubernetes Pod and Service IP addresses. If you don't specify a value, ipv4 is used by default. You can only specify an IP family when you create a cluster and can't change this value once the cluster is created. If you specify ipv6, the VPC and subnets that you specify for cluster creation must have both IPv4 and IPv6 CIDR blocks assigned to them.",
           "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
           "type": "options",
+          "required": true,
+          "default": "ipv4",
           "options": [
             {
               "id": "ipv4",
@@ -162,49 +170,54 @@
           "viewName": "API Logs",
           "description": "Enable or disable exporting the Kubernetes control plane API logs for your cluster to CloudWatch Logs.",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         {
           "name": "auditLogs",
           "viewName": "Audit Logs",
           "description": "Enable or disable exporting the Kubernetes control plane Audit logs for your cluster to CloudWatch Logs.",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         {
           "name": "authenticatorLogs",
           "viewName": "Authenticator Logs",
           "description": "Enable or disable exporting the Kubernetes control plane Authenticator logs for your cluster to CloudWatch Logs.",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         {
           "name": "controllerManagerLogs",
           "viewName": "Controller Manager Logs",
           "description": "Enable or disable exporting the Kubernetes control plane Controller Manager logs for your cluster to CloudWatch Logs.",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         {
           "name": "schedulerLogs",
           "viewName": "Scheduler Logs",
           "description": "Enable or disable exporting the Kubernetes control plane Scheduler logs for your cluster to CloudWatch Logs.",
           "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html",
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         {
           "name": "kubernetesVersion",
           "viewName": "Kubernetes Version",
           "description": "The desired Kubernetes version for your cluster. If you don't specify a value here, the latest version available in Amazon EKS is used.",
-          "placeholder": "1.10",
-          "learnUrl": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property",
+          "placeholder": "1.28",
+          "learnUrl": "https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html",
           "type": "string"
         },
         {
           "name": "tags",
           "viewName": "Tags",
           "description": "The metadata to apply to the cluster to assist with categorization and organization. Each tag consists of a key and an optional value. You define them using \"KEY=VALUE\" syntax.",
-          "placeholder": "ClusterMetadata1=SomeValue",
+          "placeholder": "Name=prod-a\nEnvironment=production",
           "type": "text",
           "parserType": "keyValuePairs"
         },
@@ -228,7 +241,8 @@
           "name": "waitForActiveStatus",
           "viewName": "Wait For Active Status",
           "description": "Poll cluster's status until it's active",
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       ]
     },
