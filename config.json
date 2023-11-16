@@ -233,24 +233,44 @@
       ]
     },
     {
-      "name": "getToken",
-      "viewName": "Get Token",
+      "name": "runKubectlCommand",
+      "viewName": "Run Kubectl Command",
       "params": [
         {
           "name": "clusterName",
           "viewName": "EKS Cluster Name",
-          "description": "The name of the cluster to generate token for.",
-          "placeholder": "prod",
+          "description": "The name of the cluster to use in the kubectl configuration",
+          "placeholder": "testdev-a",
           "type": "string",
           "required": true
         },
         {
           "name": "region",
           "viewName": "AWS Region",
-          "description": "The region to send service requests to. A region is a physical location around the world where the AWS data center is situated.",
+          "description": "The region where the cluster is located",
           "type": "autocomplete",
           "autocompleteType": "function",
           "functionName": "listRegions",
+          "required": true
+        },
+        {
+          "name": "workingDirectory",
+          "viewName": "Working Directory",
+          "type": "string",
+          "description": "Optional path on Kaholo agent to use as working directory, for commands using files",
+          "placeholder": "myproject/kubeyml",
+          "parserType": "filePath",
+          "parserOptions": {
+            "throwIfDoesntExist": true,
+            "acceptedTypes": ["directory"]
+          }
+        },
+        {
+          "name": "command",
+          "viewName": "Command",
+          "description": "Any command that starts with \"kubectl\"",
+          "placeholder": "kubectl get pods --all-namespaces",
+          "type": "string",
           "required": true
         }
       ]

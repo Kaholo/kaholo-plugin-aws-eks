@@ -10,21 +10,7 @@ const autocomplete = require("./autocomplete");
 const { fetchToken } = require("./helpers");
 const { prepareCreateClusterPayload } = require("./payload-functions");
 const { CREDENTIAL_KEYS } = require("./consts");
-
-async function getToken(client, parameters) {
-  const { clusterName } = parameters;
-
-  const { cluster } = await client.send(
-    new DescribeClusterCommand({ name: clusterName }),
-  );
-  const token = await fetchToken(parameters);
-
-  return {
-    token,
-    clusterHost: cluster.endpoint,
-    clusterCA: cluster.certificateAuthority.data,
-  };
-}
+const kubectl = require("./kubectl");
 
 async function createCluster(client, params, region) {
   const awsCreateCluster = awsPluginLibrary.generateAwsMethod(
@@ -46,11 +32,34 @@ async function createCluster(client, params, region) {
   );
 }
 
+async function runKubectlCommand(client, parameters) {
+  const {
+    clusterName,
+    command,
+    workingDirectory,
+  } = parameters;
+
+  const { cluster } = await client.send(
+    new DescribeClusterCommand({ name: clusterName }),
+  );
+  const token = await fetchToken(parameters);
+
+  const kubeCtlConfig = {
+    kubeToken: token,
+    kubeApiServer: cluster.endpoint,
+    kubeCertificate: cluster.certificateAuthority.data,
+    command,
+    workingDirectory,
+  };
+
+  return kubectl.runCommand(kubeCtlConfig);
+}
+
 module.exports = awsPluginLibrary.bootstrap(
   EKSClient,
   {
-    getToken,
     createCluster,
+    runKubectlCommand,
   },
   autocomplete,
   CREDENTIAL_KEYS,
