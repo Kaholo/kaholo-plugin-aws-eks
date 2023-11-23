@@ -1,51 +1,66 @@
-const dayjs = require("dayjs");
-const EKSToken = require("aws-eks-token");
-
-const kaholo = require("@kaholo/aws-plugin-library");
-const aws = require("aws-sdk");
-const autocomplete = require("./autocomplete");
-
-const { CREDENTIAL_LABELS } = require("./helpers");
-
+const awsPluginLibrary = require("@kaholo/aws-plugin-library");
 const {
-  createPayloadForCreateCluster,
-} = require("./payload-functions");
+  EKSClient,
+  CreateClusterCommand,
+  DescribeClusterCommand,
+  waitUntilClusterActive,
+} = require("@aws-sdk/client-eks");
 
-async function getToken(client, { expires, clusterName }, region, originalParams) {
-  EKSToken.config = kaholo.helpers.readCredentials(
-    originalParams.action.params,
-    originalParams.settings,
-    CREDENTIAL_LABELS,
+const autocomplete = require("./autocomplete");
+const { fetchToken } = require("./helpers");
+const { prepareCreateClusterPayload } = require("./payload-functions");
+const { CREDENTIAL_KEYS } = require("./consts");
+const kubectl = require("./kubectl");
+
+async function createCluster(client, params, region) {
+  const awsCreateCluster = awsPluginLibrary.generateAwsMethod(
+    CreateClusterCommand,
+    prepareCreateClusterPayload,
   );
-  const reqTime = dayjs();
-  const dateFormat = "YYYY-MM-DDTHH:mm:ss[Z]";
+  const { cluster } = await awsCreateCluster(client, params, region);
 
-  const token = await EKSToken.renew(
-    clusterName,
-    expires,
-    reqTime.utc().format(dateFormat),
+  if (!params.waitForActiveStatus) {
+    return cluster;
+  }
+
+  const clusterName = cluster.name;
+  await waitUntilClusterActive({ client }, {
+    name: clusterName,
+  });
+  return client.send(
+    new DescribeClusterCommand({ name: clusterName }),
   );
-
-  const { cluster } = await client.describeCluster({ name: clusterName }).promise();
-  const expirationTimestamp = reqTime.add(expires, "s").utc().format(dateFormat);
-  return {
-    expirationTimestamp,
-    token,
-    clusterHost: cluster.endpoint,
-    clusterCA: cluster.certificateAuthority.data,
-  };
 }
 
-const createCluster = kaholo.generateAwsMethod("createCluster", createPayloadForCreateCluster);
+async function runKubectlCommand(client, parameters) {
+  const {
+    clusterName,
+    command,
+    workingDirectory,
+  } = parameters;
 
-module.exports = {
-  ...kaholo.bootstrap(
-    aws.EKS,
-    {
-      getToken,
-      createCluster,
-    },
-    autocomplete,
-    CREDENTIAL_LABELS,
-  ),
-};
+  const { cluster } = await client.send(
+    new DescribeClusterCommand({ name: clusterName }),
+  );
+  const token = await fetchToken(parameters);
+
+  const kubeCtlConfig = {
+    kubeToken: token,
+    kubeApiServer: cluster.endpoint,
+    kubeCertificate: cluster.certificateAuthority.data,
+    command,
+    workingDirectory,
+  };
+
+  return kubectl.runCommand(kubeCtlConfig);
+}
+
+module.exports = awsPluginLibrary.bootstrap(
+  EKSClient,
+  {
+    createCluster,
+    runKubectlCommand,
+  },
+  autocomplete,
+  CREDENTIAL_KEYS,
+);

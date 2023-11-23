@@ -1,23 +1,24 @@
 const kaholo = require("@kaholo/aws-plugin-library");
-const aws = require("aws-sdk");
-const { MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE } = require("./consts");
+const {
+  IAMClient,
+  ListRolesCommand,
+} = require("@aws-sdk/client-iam");
 
 const {
   roleFilter,
-  CREDENTIAL_LABELS,
 } = require("./helpers");
+const { CREDENTIAL_KEYS } = require("./consts");
 
-async function listRoles(query, parsedParams, client, region, { pluginSettings, actionParams }) {
-  const [params, settings] = [actionParams, pluginSettings]
-    .map(kaholo.autocomplete.mapAutocompleteFuncParamsToObject);
-  const credentials = kaholo.helpers.readCredentials(params, settings, CREDENTIAL_LABELS);
-  const iam = new aws.IAM(credentials);
+async function listRoles(query, params) {
+  const credentials = kaholo.helpers.readCredentials(params, CREDENTIAL_KEYS);
+  const iamClient = new IAMClient(credentials);
+
   let roles;
   try {
-    roles = await iam.listRoles().promise();
+    roles = await iamClient.send(new ListRolesCommand({}));
   } catch (err) {
     console.error(err);
-    throw new Error(MISSING_OR_INCORRECT_CREDENTIALS_ERROR_MESSAGE);
+    throw new Error("Missing or incorrect credentials - please select valid access and secret keys first");
   }
 
   return roles.Roles
