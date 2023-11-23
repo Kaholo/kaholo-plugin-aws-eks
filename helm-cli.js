@@ -5,21 +5,21 @@ const {
 const { promisify } = require("util");
 const tmp = require('tmp');
 const fs = require('fs');
+const path = require('path');
 const exec = promisify(require("child_process").exec);
-const path = require("path");
-const { HELM_DOCKER_IMAGE } = require("consts")
+
+const { HELM_DOCKER_IMAGE, TOKEN_REGEXP } = require("./consts")
 
 async function runCommand(helmConfig) {
   const {
     kubeToken,
     kubeApiServer,
     kubeCertificate,
-    kubeUser,
     command,
     workingDirectory,
   } = helmConfig;
 
-  const tmpfile = tmp.fileSync({ mode: 0o644, prefix: 'kubeCAcert-', postfix: '.tmp' });
+  const tmpfile = tmp.fileSync({ prefix: 'kubeCAcert-', postfix: '.tmp' });
   fs.writeFileSync(tmpfile.name, kubeCertificate);
   const certificateFilePath = tmpfile.name;
   console.error(`CERTPATH: ${certificateFilePath}`);
@@ -43,17 +43,20 @@ async function runCommand(helmConfig) {
   volumeDefinitions.push(workingDirectoryVolumeDefinition);
   additionalArguments.push("-w", `$${workingDirectoryVolumeDefinition.mountPoint.name}`);
 
+  console.error(`KUBECAFILE: ${certificateVolumeDefinition.mountPoint.value}/${certificateFileName}`)
+
   const authenticationParametersMap = new Map([
     ["--kube-ca-file", `${certificateVolumeDefinition.mountPoint.value}/${certificateFileName}`],
     ["--kube-token", kubeToken],
     ["--kube-apiserver", kubeApiServer],
-    ["--kube-as-user", kubeUser],
   ]);
 
   const sanitizedParametersMap = sanitizeParameters(
     command,
     authenticationParametersMap,
   );
+
+  console.error(`sanitizedPARAMSMap: ${JSON.stringify(sanitizedParametersMap)}`)
   // eslint-disable-next-line max-len
   const parametersWithEnvironmentalVariablesArray = paramsMapToParamsWithEnvironmentalVariablesArray(
     sanitizedParametersMap,
@@ -105,16 +108,6 @@ ${parametersWithEnvironmentalVariablesArray.join(" ")}`;
   };
 }
 
-function extractChartPathFromCommand(command) {
-  const paths = helpers.extractPathsFromCommand(command);
-
-  if (paths.length < 1 || !paths[0].path) {
-    return null;
-  }
-
-  return paths[0].path;
-}
-
 function paramsMapToParamsWithEnvironmentalVariablesArray(paramsMap) {
   return Array.from(
     paramsMap,
@@ -145,6 +138,40 @@ function sanitizeCommand(command) {
   return command.startsWith("helm")
     ? command.slice(4).trim()
     : command;
+}
+
+// Make sure command isn't overrriding something
+function sanitizeParameters(command, authenticationParamsMap) {
+  const sanitizedParameters = new Map();
+
+  authenticationParamsMap.forEach((value, key) => {
+    if (!command.includes(key)) {
+      sanitizedParameters.set(key, value);
+    }
+  });
+
+  return sanitizedParameters;
+}
+
+
+function splitDirectory(directory) {
+  return [
+    path.dirname(directory),
+    path.basename(directory),
+  ];
+}
+
+function paramsMapToEnvironmentalVariablesObject(paramsMap) {
+  return Object.fromEntries(
+    Array.from(
+      paramsMap,
+      ([key, value]) => ([generateEnvironmentalVariableName(key).substring(1), value]),
+    ),
+  );
+}
+
+function redactTokenValue(str) {
+  return str.replace(TOKEN_REGEXP, "$1redacted$3");
 }
 
 module.exports = {

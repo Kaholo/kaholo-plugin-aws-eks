@@ -8,7 +8,6 @@ const {
 
 const autocomplete = require("./autocomplete");
 const { fetchToken } = require("./helpers");
-const { extractUserFromJWT } = require(".helpers-helm");
 const { prepareCreateClusterPayload } = require("./payload-functions");
 const { CREDENTIAL_KEYS } = require("./consts");
 const kubectl = require("./kubectl");
@@ -69,16 +68,15 @@ async function runHelmCommand(client, parameters) {
   );
   const token = await fetchToken(parameters);
 
-  const kubeUser = extractUserFromJWT(token);
-
   const helmConfig = {
     kubeToken: token,
     kubeApiServer: cluster.endpoint,
     kubeCertificate: cluster.certificateAuthority.data,
-    kubeUser,
     command,
     workingDirectory,
   };
+
+  console.error(`HELMCONFIG: ${JSON.stringify(helmConfig)}`);
 
   return helmCli.runCommand(helmConfig);
 }
