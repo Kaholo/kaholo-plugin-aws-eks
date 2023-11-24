@@ -76,8 +76,6 @@ async function runHelmCommand(client, parameters) {
     workingDirectory,
   };
 
-  console.error(`HELMCONFIG: ${JSON.stringify(helmConfig)}`);
-
   return helmCli.runCommand(helmConfig);
 }
 

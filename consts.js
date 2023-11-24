@@ -7,6 +7,7 @@ const CREDENTIAL_KEYS = {
 
 // this image is 77MB in size
 const KUBECTL_DOCKER_IMAGE = "bitnami/kubectl:1.28.3";
+// this image is 82MB in size
 const HELM_DOCKER_IMAGE = "alpine/helm:3.13.2";
 
 const TOKEN_REGEXP = /(HELM_KUBETOKEN=")([\w\d-.]+)?(")/;

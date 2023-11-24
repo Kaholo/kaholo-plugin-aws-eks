@@ -3,12 +3,12 @@ const {
   helpers,
 } = require("@kaholo/plugin-library");
 const { promisify } = require("util");
-const tmp = require('tmp');
-const fs = require('fs');
-const path = require('path');
+const tmp = require("tmp");
+const fs = require("fs");
 const exec = promisify(require("child_process").exec);
 
-const { HELM_DOCKER_IMAGE, TOKEN_REGEXP } = require("./consts")
+const helmhelp = require("./helpers-helm");
+const { HELM_DOCKER_IMAGE } = require("./consts");
 
 async function runCommand(helmConfig) {
   const {
@@ -19,7 +19,7 @@ async function runCommand(helmConfig) {
     workingDirectory,
   } = helmConfig;
 
-  const tmpfile = tmp.fileSync({ prefix: 'kubeCAcert-', postfix: '.tmp' });
+  const tmpfile = tmp.fileSync({ prefix: "kubeCAcert-", postfix: ".tmp" });
   fs.writeFileSync(tmpfile.name, atob(kubeCertificate));
   const certificateFilePath = tmpfile.name;
 
@@ -28,7 +28,7 @@ async function runCommand(helmConfig) {
     "-v /tmp/root:/root",
   ];
 
-  const [certificatePath, certificateFileName] = splitDirectory(certificateFilePath);
+  const [certificatePath, certificateFileName] = helmhelp.splitDirectory(certificateFilePath);
   const certificateVolumeDefinition = docker.createVolumeDefinition(certificatePath);
   const volumeDefinitions = [
     certificateVolumeDefinition,
@@ -41,25 +41,23 @@ async function runCommand(helmConfig) {
   volumeDefinitions.push(workingDirectoryVolumeDefinition);
   additionalArguments.push("-w", `$${workingDirectoryVolumeDefinition.mountPoint.name}`);
 
-  console.error(`KUBECAFILE: ${certificateVolumeDefinition.mountPoint.value}/${certificateFileName}`)
-
   const authenticationParametersMap = new Map([
     ["--kube-ca-file", `${certificateVolumeDefinition.mountPoint.value}/${certificateFileName}`],
     ["--kube-token", kubeToken],
     ["--kube-apiserver", kubeApiServer],
   ]);
 
-  const sanitizedParametersMap = sanitizeParameters(
+  const sanitizedParametersMap = helmhelp.sanitizeParameters(
     command,
     authenticationParametersMap,
   );
 
-  console.error(`sanitizedPARAMSMap: ${JSON.stringify(sanitizedParametersMap)}`)
   // eslint-disable-next-line max-len
-  const parametersWithEnvironmentalVariablesArray = paramsMapToParamsWithEnvironmentalVariablesArray(
+  const parametersWithEnvironmentalVariablesArray = helmhelp.paramsMapToParamsWithEnvironmentalVariablesArray(
     sanitizedParametersMap,
   );
-  const environmentalVariablesContainingParametersObject = paramsMapToEnvironmentalVariablesObject(
+  // eslint-disable-next-line max-len
+  const environmentalVariablesContainingParametersObject = helmhelp.paramsMapToEnvironmentalVariablesObject(
     sanitizedParametersMap,
   );
 
@@ -83,7 +81,7 @@ async function runCommand(helmConfig) {
   );
 
   const helmCommand = `\
-${sanitizeCommand(command)} \
+${helmhelp.sanitizeCommand(command)} \
 ${parametersWithEnvironmentalVariablesArray.join(" ")}`;
 
   const completeCommand = docker.buildDockerCommand({
@@ -94,82 +92,18 @@ ${parametersWithEnvironmentalVariablesArray.join(" ")}`;
     additionalArguments,
   });
 
-  console.error(`Executing ${completeCommand}`);
-
   const result = await exec(completeCommand, {
     env: shellEnvironmentalVariables,
   });
 
+  if (result.stdout && !result.stderr) {
+    return helmhelp.redactTokenValue(result.stdout);
+  }
+
   return {
     stderr: result.stderr,
-    stdout: redactTokenValue(result.stdout),
+    stdout: helmhelp.redactTokenValue(result.stdout),
   };
-}
-
-function paramsMapToParamsWithEnvironmentalVariablesArray(paramsMap) {
-  return Array.from(
-    paramsMap,
-    ([key]) => ([key, generateEnvironmentalVariableName(key)]),
-  ).flat();
-}
-
-function generateEnvironmentalVariableName(parameterName) {
-  const regex = /-/g;
-
-  let result = parameterName.replace(regex, "_");
-
-  if (result.startsWith("_")) {
-    result = result.substring(1);
-  }
-
-  if (result.startsWith("_")) {
-    result = result.substring(1);
-  }
-
-  result = `$${result.toUpperCase()}`;
-
-  return result;
-}
-
-// Helm Docker image has ENTRYPOINT ["helm"]
-function sanitizeCommand(command) {
-  return command.startsWith("helm")
-    ? command.slice(4).trim()
-    : command;
-}
-
-// Make sure command isn't overrriding something
-function sanitizeParameters(command, authenticationParamsMap) {
-  const sanitizedParameters = new Map();
-
-  authenticationParamsMap.forEach((value, key) => {
-    if (!command.includes(key)) {
-      sanitizedParameters.set(key, value);
-    }
-  });
-
-  return sanitizedParameters;
-}
-
-
-function splitDirectory(directory) {
-  return [
-    path.dirname(directory),
-    path.basename(directory),
-  ];
-}
-
-function paramsMapToEnvironmentalVariablesObject(paramsMap) {
-  return Object.fromEntries(
-    Array.from(
-      paramsMap,
-      ([key, value]) => ([generateEnvironmentalVariableName(key).substring(1), value]),
-    ),
-  );
-}
-
-function redactTokenValue(str) {
-  return str.replace(TOKEN_REGEXP, "$1redacted$3");
 }
 
 module.exports = {
