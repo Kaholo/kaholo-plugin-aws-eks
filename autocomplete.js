@@ -17,7 +17,6 @@ async function listRoles(query, params) {
   try {
     roles = await iamClient.send(new ListRolesCommand({}));
   } catch (err) {
-    console.error(err);
     throw new Error("Missing or incorrect credentials - please select valid access and secret keys first");
   }
 
