@@ -20,10 +20,8 @@ async function runCommand(helmConfig) {
   } = helmConfig;
 
   const tmpfile = tmp.fileSync({ prefix: 'kubeCAcert-', postfix: '.tmp' });
-  fs.writeFileSync(tmpfile.name, kubeCertificate);
+  fs.writeFileSync(tmpfile.name, atob(kubeCertificate));
   const certificateFilePath = tmpfile.name;
-  console.error(`CERTPATH: ${certificateFilePath}`);
-  console.error(`TMPFILE: ${JSON.stringify(tmpfile)}`);
 
   // this probably because Helm caches things in user's home folder
   const additionalArguments = [
