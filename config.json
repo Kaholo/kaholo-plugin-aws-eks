@@ -5,7 +5,7 @@
   "imgUrl": "logo.png",
   "execProgram": "node",
   "main": "app.js",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Amazon Web Services managed service for Kubernetes",
   "category": [
     "Containers"
@@ -284,7 +284,52 @@
           "viewName": "Command",
           "description": "Any command that starts with \"kubectl\"",
           "placeholder": "kubectl get pods --all-namespaces",
+          "type": "text",
+          "parserType": "array",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "runHelmCommand",
+      "viewName": "Run Helm Command",
+      "params": [
+        {
+          "name": "clusterName",
+          "viewName": "EKS Cluster Name",
+          "description": "The name of the cluster to use in the kubectl configuration",
+          "placeholder": "testdev-a",
           "type": "string",
+          "required": true
+        },
+        {
+          "name": "region",
+          "viewName": "AWS Region",
+          "description": "The region where the cluster is located",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listRegions",
+          "required": true
+        },
+        {
+          "name": "workingDirectory",
+          "viewName": "Working Directory",
+          "type": "string",
+          "description": "Optional path on Kaholo agent to use as working directory, for commands using files",
+          "placeholder": "myproject/helmcharts",
+          "parserType": "filePath",
+          "parserOptions": {
+            "throwIfDoesntExist": true,
+            "acceptedTypes": ["directory"]
+          }
+        },
+        {
+          "name": "command",
+          "viewName": "Command",
+          "description": "Any command that starts with \"helm\"",
+          "placeholder": "helm install deploy-wzek bitnami/wordpress",
+          "type": "text",
+          "parserType": "array",
           "required": true
         }
       ]

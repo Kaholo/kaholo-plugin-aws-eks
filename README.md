@@ -138,9 +138,27 @@ The name of the EKS Cluster to which the kubectl command will be directed.
 The AWS Region in which the cluster can be found.
 
 ### Parameter: Working Directory
-The directory on the Kaholo agent if and where interaction with the file system is required. For example if a YAML kuberentes deployment is located in a project's code repository that has been cloned into the default working directory using the Git plugin, the working directory might be `myproject/kube-yaml` and the command might then be `kubectl apply -f deployment-dev.yml -n development`.
+The directory on the Kaholo agent if and where interaction with the file system is required. For example if a YAML kuberentes deployment is located in a project's code repository that has been cloned into the default working directory using the Git plugin, the working directory might be `mygitproject/kube-yaml` and the command might then be `kubectl apply -f deployment-dev.yml -n development`.
 
-Either relative or absolute path may be used. If no path is given, the Kaholo agent's default working directory is used instead. For example on a default Kaholo agent, that's `/twiddlebug/workspace`. Using the previous example, Working Directory may be left blank and the command changed to `kubectl apply -f myproject/kube-yaml/deployment-dev.yml -n development`, or Working Directory could be `/twiddlebug/workspace/myproject/kube-yaml` and the command left as in the previous example.
+Either relative or absolute path may be used. If no path is given, the Kaholo agent's default working directory is used instead. For example on a default Kaholo agent, that's `/twiddlebug/workspace`. Using the previous example, Working Directory may be left blank and the command changed to `kubectl apply -f mygitproject/kube-yaml/deployment-dev.yml -n development`, or Working Directory could be `/twiddlebug/workspace/mygitproject/kube-yaml` and the command left as in the previous example.
+
+Kubectl is run in a docker container and Working Directory is mounted as a docker volume for that container. Files located inside the Working Directory remain consistent both on the Kaholo Agent and in the docker container during and after execution.
+
+A command making use of or creating files outside of the Working Directory is likely to fail because while the required/expected files might exist on the Kaholo Agent's filesystem or inside the docker container, they won't exist in the container or on the Kaholo Agent when needed or as expected after execution.
+
+## Method: Run Helm Command
+This method gets a new EKS token and then uses it to run any `helm` command, for example `helm install devweb bitnami/wordpress`. If a command references files use a path relative to the Working Directory, as explained in detail below.
+
+### Parameter: EKS Cluster Name
+The name of the EKS Cluster to which the kubectl command will be directed.
+
+### Parameter: AWS Region
+The AWS Region in which the cluster can be found.
+
+### Parameter: Working Directory
+The directory on the Kaholo agent if and where interaction with the file system is required. For example if a redis deployment is located in a project's code repository that has been cloned into the default working directory using the Git plugin, the working directory might be `mygitproject/helm` and the command might then be `helm install --set name=prod myredis ./redis`.
+
+Either relative or absolute path may be used. If no path is given, the Kaholo agent's default working directory is used instead. For example on a default Kaholo agent, that's `/twiddlebug/workspace`. Using the previous example, Working Directory may be left blank and the command changed to `helm install --set name=prod myredis mygitproject/helm/redis`, or Working Directory could be `/twiddlebug/workspace/mygitproject/helm` and the command left as in the previous example.
 
 Kubectl is run in a docker container and Working Directory is mounted as a docker volume for that container. Files located inside the Working Directory remain consistent both on the Kaholo Agent and in the docker container during and after execution.
 

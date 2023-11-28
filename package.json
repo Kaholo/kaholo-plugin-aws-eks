@@ -12,10 +12,15 @@
     "@aws-crypto/sha256-js": "^5.2.0",
     "@aws-sdk/client-eks": "^3.435.0",
     "@aws-sdk/client-iam": "^3.435.0",
-    "@kaholo/aws-plugin-library": "github:Kaholo/aws-plugin-library#0f26666540ba7a6d366beaf2274f572ab85e9478",
+    "@kaholo/aws-plugin-library": "^4.0.2",
     "@kaholo/plugin-library": "^2.4.0",
     "@smithy/signature-v4": "^2.0.12",
     "@smithy/types": "2.4.0",
+    "fs": "^0.0.1-security",
+    "jwt-decode": "^3.1.2",
+    "path": "^0.12.7",
+    "tmp": "^0.2.1",
+    "util": "^0.12.5",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
