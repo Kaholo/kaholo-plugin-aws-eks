@@ -36,7 +36,7 @@ async function createCluster(client, params, region) {
 async function runKubectlCommand(client, parameters) {
   const {
     clusterName,
-    command,
+    command: commandArgs,
     workingDirectory,
   } = parameters;
 
@@ -49,7 +49,7 @@ async function runKubectlCommand(client, parameters) {
     kubeToken: token,
     kubeApiServer: cluster.endpoint,
     kubeCertificate: cluster.certificateAuthority.data,
-    command,
+    command: commandArgs.join(" "),
     workingDirectory,
   };
 
@@ -59,7 +59,7 @@ async function runKubectlCommand(client, parameters) {
 async function runHelmCommand(client, parameters) {
   const {
     clusterName,
-    command,
+    command: commandArgs,
     workingDirectory,
   } = parameters;
 
@@ -72,7 +72,7 @@ async function runHelmCommand(client, parameters) {
     kubeToken: token,
     kubeApiServer: cluster.endpoint,
     kubeCertificate: cluster.certificateAuthority.data,
-    command,
+    command: commandArgs.join(" "),
     workingDirectory,
   };
 
